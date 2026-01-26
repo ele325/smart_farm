@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # smart_farm
 
 A new Flutter project.
@@ -14,3 +15,6 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+=======
+# smart_farm
+>>>>>>> bc68e96da848302352553ee85c521a4e2b9e97d1

@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "911711078083",
+    "project_id": "smart-irrigation-pfe-a52f7",
+    "storage_bucket": "smart-irrigation-pfe-a52f7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:911711078083:android:78cee1e1df6dda07ee4476",
+        "android_client_info": {
+          "package_name": "com.example.smart_farm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "911711078083-265khlpmphj2tstguvt8m36p2ahoo4kg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.smart_farm",
+            "certificate_hash": "f241280e48d6377366d2a762375946027f606261"
+          }
+        },
+        {
+          "client_id": "911711078083-ppk87uoj2bslm5kr2s5em7sd54nujbah.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOn_9mktsrniE1vcEJXwGP9sg8hAnObc8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "911711078083-ppk87uoj2bslm5kr2s5em7sd54nujbah.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "911711078083-o15bl71b5fd9m12jcbnfdclf581m9akb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.smartFarm"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

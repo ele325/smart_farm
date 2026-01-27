@@ -18,7 +18,7 @@ class LoginPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // --- HEADER VERT ---
+            // --- HEADER AVEC LOGO ROBOCARE ---
             Container(
               height: 220,
               width: double.infinity,
@@ -32,152 +32,107 @@ class LoginPage extends StatelessWidget {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(15),
                     ),
-                    child: const Icon(Icons.eco, color: AppColors.primary, size: 50),
+                    child: Image.asset(
+                      'assets/images/robocare_logo.png',
+                      height: 70,
+                      width: 70,
+                      fit: BoxFit.contain,
+                      // Si l'image n'est pas trouvée, affiche une icône de secours
+                      errorBuilder: (context, error, stackTrace) => 
+                          const Icon(Icons.eco, color: AppColors.primary, size: 50),
+                    ),
                   ),
                   const SizedBox(height: 12),
                   const Text(
                     'Smart Irrigation',
                     style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
+                      color: Colors.white, 
+                      fontSize: 26, 
+                      fontWeight: FontWeight.bold
                     ),
                   ),
                 ],
               ),
             ),
 
-            // --- FORMULAIRE ---
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('email'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  // Champ Email
+                  _buildLabel('email'.tr),
                   const SizedBox(height: 8),
-                  TextField(
-                    controller: controller.emailController,
-                    decoration: InputDecoration(
-                      hintText: 'email'.tr,
-                      prefixIcon: const Icon(Icons.email_outlined),
-                      filled: true,
-                      fillColor: const Color(0xFFF5F5F5),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                  ),
+                  _buildInputField(controller.emailController, 'email_hint'.tr, Icons.email_outlined),
+                  
                   const SizedBox(height: 20),
 
-                  Text('password'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  // Champ Password
+                  _buildLabel('password'.tr),
                   const SizedBox(height: 8),
-                  // Seul ce Obx est nécessaire car il écoute isPasswordHidden.value
-                  Obx(() => TextField(
-                    controller: controller.passwordController,
-                    obscureText: controller.isPasswordHidden.value,
-                    decoration: InputDecoration(
-                      hintText: 'password'.tr,
-                      prefixIcon: const Icon(Icons.lock_outline),
-                      suffixIcon: IconButton(
-                        icon: Icon(controller.isPasswordHidden.value 
-                            ? Icons.visibility_off 
-                            : Icons.visibility),
-                        onPressed: controller.togglePasswordVisibility,
-                      ),
-                      filled: true,
-                      fillColor: const Color(0xFFF5F5F5),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
+                  Obx(() => _buildInputField(
+                    controller.passwordController, 
+                    'password_hint'.tr, 
+                    Icons.lock_outline,
+                    isPass: true,
+                    hidden: controller.isPasswordHidden.value,
+                    onToggle: controller.togglePasswordVisibility,
                   )),
 
-                  const SizedBox(height: 10),
+                  // Remember Me
                   Row(
                     children: [
-                      Checkbox(value: false, onChanged: (val) {}),
-                      Text('remember_me'.tr, style: const TextStyle(fontSize: 12)),
+                      Obx(() => Checkbox(
+                        value: controller.rememberMe.value, 
+                        onChanged: (val) => controller.toggleRememberMe(val),
+                        activeColor: AppColors.primary,
+                      )),
+                      Text('remember_me'.tr, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                     ],
                   ),
-
                   const SizedBox(height: 20),
 
-                  // BOUTON CONNEXION (Pas de Obx ici pour éviter l'erreur)
-                  AppButton(
+                  // Bouton Login Principal
+                  Obx(() => AppButton(
                     title: 'login'.tr.toUpperCase(),
+                    isLoading: controller.isLoading.value,
                     onTap: () => controller.login(),
-                  ),
+                  )),
 
-                  // LIEN MOT DE PASSE OUBLIÉ
+                  // Mot de passe oublié
                   Center(
                     child: TextButton(
                       onPressed: () => Get.toNamed(Routes.forgotPassword),
                       child: Text('forgot_password'.tr, 
-                          style: const TextStyle(color: Colors.black54)),
+                          style: const TextStyle(color: Colors.black54, fontWeight: FontWeight.bold)),
                     ),
                   ),
 
-                  const SizedBox(height: 10),
+                  // Séparateur "OU"
                   Row(
                     children: [
                       const Expanded(child: Divider()),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Text('or'.tr, style: const TextStyle(color: Colors.grey)),
+                        child: Text('or'.tr, style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
                       ),
                       const Expanded(child: Divider()),
                     ],
                   ),
                   const SizedBox(height: 20),
 
-                  // BOUTON GOOGLE
-                  OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 52),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                    ),
-                    icon: const Icon(Icons.login, color: Colors.red), 
-                    label: Text('google_login'.tr, 
-                        style: const TextStyle(color: Colors.black87)),
-                    onPressed: () => controller.loginWithGoogle(),
-                  ),
+                  // --- BOUTON GOOGLE CORRIGÉ ---
+                  _buildGoogleButton(),
 
                   const SizedBox(height: 30),
-                  
-                  // LIEN CRÉER UN COMPTE CORRIGÉ (SANS NO_ACCOUNT)
-                  Center(
-                    child: GestureDetector(
-                      onTap: () => Get.toNamed(Routes.signup),
-                      child: Text(
-                        'create_account'.tr,
-                        style: const TextStyle(
-                          color: AppColors.primary, 
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ),
-                  ),
+
+                  // Lien Inscription
+                  _buildBottomLink(),
 
                   const SizedBox(height: 40),
 
-                  // SÉLECTEUR DE LANGUE (Obx retiré pour corriger l'écran rouge)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _buildLangBtn('AR', 'ar'),
-                      const SizedBox(width: 10),
-                      _buildLangBtn('FR', 'fr'),
-                      const SizedBox(width: 10),
-                      _buildLangBtn('EN', 'en'),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  const Center(child: Text('v2.1.3', 
-                      style: TextStyle(color: Colors.grey, fontSize: 10))),
+                  // Sélecteur de Langue
+                  _buildLanguageSelector(),
                 ],
               ),
             ),
@@ -187,7 +142,84 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  // Fonction simplifiée sans Obx pour éviter l'erreur GetX détectée
+  // --- WIDGETS DE SOUTIEN ---
+
+  Widget _buildLabel(String label) => Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black87));
+
+  Widget _buildInputField(TextEditingController ctrl, String hint, IconData icon, {bool isPass = false, bool hidden = false, VoidCallback? onToggle}) {
+    return TextField(
+      controller: ctrl,
+      obscureText: isPass ? hidden : false,
+      style: const TextStyle(fontWeight: FontWeight.bold),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: const TextStyle(fontWeight: FontWeight.normal),
+        prefixIcon: Icon(icon),
+        suffixIcon: isPass ? IconButton(icon: Icon(hidden ? Icons.visibility_off : Icons.visibility), onPressed: onToggle) : null,
+        filled: true,
+        fillColor: const Color(0xFFF5F5F5),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+      ),
+    );
+  }
+
+  Widget _buildGoogleButton() {
+    return OutlinedButton(
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size(double.infinity, 52),
+        side: BorderSide(color: Colors.grey.shade300),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      onPressed: () => controller.loginWithGoogle(),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(
+            'assets/images/google_logo.png',
+            height: 24,
+            errorBuilder: (context, error, stackTrace) => const Icon(Icons.account_circle, color: Colors.blue, size: 24),
+          ),
+          const SizedBox(width: 12),
+          Flexible( // Empêche l'erreur de débordement jaune/noir
+            child: Text(
+              'google_login'.tr,
+              style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 16),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomLink() {
+    return Center(
+      child: GestureDetector(
+        onTap: () => Get.toNamed(Routes.signup),
+        child: RichText(
+          text: TextSpan(
+            text: "${'no_account'.tr} ",
+            style: const TextStyle(color: Colors.black54, fontWeight: FontWeight.bold),
+            children: [
+              TextSpan(text: 'create_account'.tr, style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, decoration: TextDecoration.underline)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageSelector() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: ['AR', 'FR', 'EN'].map((l) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5),
+        child: _buildLangBtn(l, l.toLowerCase()),
+      )).toList(),
+    );
+  }
+
   Widget _buildLangBtn(String label, String langCode) {
     bool isSelected = Get.locale?.languageCode == langCode;
     return GestureDetector(
@@ -196,19 +228,12 @@ class LoginPage extends StatelessWidget {
         GetStorage().write('language_code', langCode);
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primary : Colors.grey[200],
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(10),
         ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 12,
-          ),
-        ),
+        child: Text(label, style: TextStyle(color: isSelected ? Colors.white : Colors.black, fontWeight: FontWeight.bold)),
       ),
     );
   }

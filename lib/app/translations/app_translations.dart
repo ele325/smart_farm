@@ -3,156 +3,175 @@ import 'package:get/get.dart';
 class AppTranslations extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
-    'ar': {
-      // Auth
-      'login': 'تسجيل الدخول',
-      'email': 'البريد الإلكتروني',
-      'password': 'كلمة المرور',
-      'language': 'اللغة',
+        'ar': {
+          // Auth
+          'login': 'تسجيل الدخول',
+          'email': 'البريد الإلكتروني',
+          'password': 'كلمة المرور',
+          'language': 'اللغة',
+          'remember_me': 'تذكرني',
+          'forgot_password': 'هل نسيت كلمة السر ؟',
+          'or': 'أو',
+          'google_login': 'تسجيل الدخول باستخدام جوجل',
+          'create_account': 'إنشاء حساب',
+          'no_account': 'ليس لديك حساب؟',
+          'full_name': 'الاسم الكامل',
+          'cin_number': 'رقم بطاقة التعريف',
+          'confirm_password': 'تأكيد كلمة المرور',
+          'register_btn': 'إنشاء حساب',
+          'already_have_account': 'لديك حساب بالفعل؟',
+          
+          // Hints & Messages
+          'email_hint': 'votre_nom@exemple.com',
+          'password_hint': '********',
+          'full_name_hint': 'أدخل اسمك الكامل',
+          'cin_hint': 'رقم بطاقة التعريف الوطنية',
+          'confirm_hint': 'أعد كتابة كلمة المرور',
+          'password_too_weak': 'كلمة المرور ضعيفة (تحتاج 8 رموز مع أرقام وحروف)',
+          'passwords_not_match': 'كلمات المرور غير متطابقة',
+          'account_created': 'تم إنشاء الحساب بنجاح',
+          'erreur': 'خطأ',
+          'success': 'نجاح',
+          'veuillez_remplir_champs': 'يرجى ملء جميع الحقول',
+          'welcome': 'مرحباً',
+          'google_error': 'فشل الاتصال بـ Google',
+          'user_not_found': 'هذا الحساب غير موجود',
+          'loading': 'جاري التحميل...',
 
-      'remember_me': 'تذكرني',
-      'forgot_password': 'هل نسيت كلمة السر ؟',
-      'or': 'أو',
-      'google_login': 'تسجيل الدخول باستخدام جوجل',
-      'create_account': 'إنشاء حساب',
+          // Forgot Password
+          'reset_title': 'إعادة التعيين',
+          'enter_your_mail': 'يرجى إدخال بريدك الإلكتروني لإعادة تعيين كلمة المرور',
+          'reset_password_btn': 'إعادة تعيين كلمة المرور',
+          'back_to_login': 'العودة إلى تسجيل الدخول',
+          'email_sent_success': 'تم إرسال رابط الاسترداد.',
+          'veuillez_saisir_email_valide': 'يرجى إدخال بريد إلكتروني صحيح',
 
-      'full_name': 'الاسم الكامل',
-      'confirm_password': 'تأكيد كلمة المرور',
-      'register_btn': 'إنشاء حساب',
-      'already_have_account': 'لديك حساب بالفعل؟ تسجيل الدخول',
-      'password_too_weak': 'كلمة المرور ضعيفة (تحتاج 8 رموز مع أرقام وحروف)',
-      'passwords_not_match': 'كلمات المرور غير متطابقة',
-      'account_created': 'تم إنشاء الحساب بنجاح',
+          // Navigation & Dashboard
+          'dashboard': 'لوحة التحكم',
+          'zones': 'مناطق الري',
+          'alerts': 'التنبيهات',
+          'profile': 'الملف الشخصي',
+          'soil': 'رطوبة التربة',
+          'temperature': 'درجة الحرارة',
+          'pump': 'حالة المضخة',
+          'battery': 'مستوى البطارية',
+          'subscription': 'الاشتراك',
+          'overview': 'نظرة عامة',
+          'humidity': 'الرطوبة',
+        },
 
-      'erreur': 'خطأ',
-      'success': 'نجاح',
-      'veuillez_remplir_champs': 'يرجى ملء جميع الحقول',
-      'welcome': 'مرحباً',
-      'google_error': 'فشل الاتصال بـ Google',
+        'fr': {
+          // Auth
+          'login': 'Connexion',
+          'email': 'Email',
+          'password': 'Mot de passe',
+          'language': 'Langue',
+          'remember_me': 'Se souvenir de moi',
+          'forgot_password': 'Mot de passe oublié ?',
+          'or': 'OU',
+          'google_login': 'Connexion avec Google',
+          'create_account': 'Créer un compte',
+          'no_account': "N'avez-vous pas de compte ?",
+          'full_name': 'Nom complet',
+          'cin_number': 'Numéro CIN',
+          'confirm_password': 'Confirmer le mot de passe',
+          'register_btn': "S'inscrire",
+          'already_have_account': 'Déjà un compte ?',
 
-      // Forgot Password
-  'enter_your_mail': 'يرجى إدخال بريدك الإلكتروني لإعادة تعيين كلمة المرور',
-  'reset_password_btn': 'إعادة تعيين كلمة المرور',
-  'back_to_login': 'العودة إلى تسجيل الدخول',
-  'email_sent_success': 'تم إرسال رابط الاسترداد.',
-  'veuillez_saisir_email_valide': 'يرجى إدخال بريد إلكتروني صحيح',
+          // Hints & Messages
+          'email_hint': 'votre_nom@exemple.com',
+          'password_hint': '********',
+          'full_name_hint': 'Entrez votre nom complet',
+          'cin_hint': 'Numéro de carte identité',
+          'confirm_hint': 'Répétez le mot de passe',
+          'erreur': 'Erreur',
+          'success': 'Succès',
+          'veuillez_remplir_champs': 'Veuillez remplir tous les champs',
+          'welcome': 'Bienvenue',
+          'google_error': 'Échec de la connexion Google',
+          'password_too_weak': 'Mot de passe faible (8 caractères min)',
+          'passwords_not_match': 'Les mots de passe ne correspondent pas',
+          'account_created': 'Compte créé avec succès',
+          'user_not_found': "Ce compte n'existe pas",
+          'loading': 'Chargement...',
 
-      // Navigation
-      'dashboard': 'لوحة التحكم',
-      'zones': 'مناطق الري',
-      'alerts': 'التنبيهات',
-      'profile': 'الملف الشخصي',
+          // Forgot Password
+          'reset_title': 'Réinitialisation',
+          'enter_your_mail': 'Veuillez entrer votre email pour réinitialiser le mot de passe',
+          'reset_password_btn': 'Réinitialiser le mot de passe',
+          'back_to_login': 'Retour à la connexion',
+          'email_sent_success': 'Un lien de récupération a été envoyé.',
+          'veuillez_saisir_email_valide': 'Veuillez saisir un email valide',
 
-      // Dashboard
-      'soil': 'رطوبة التربة',
-      'temperature': 'درجة الحرارة',
-      'pump': 'حالة المضخة',
-      'battery': 'مستوى البطارية',
+          // Navigation & Dashboard
+          'dashboard': 'Tableau de bord',
+          'zones': 'Zones',
+          'alerts': 'Alertes',
+          'profile': 'Profil',
+          'soil': 'Humidité du sol',
+          'temperature': 'Température',
+          'pump': 'État de la pompe',
+          'battery': 'Batterie',
+          'subscription': 'Abonnement',
+          'overview': 'Aperçu',
+          'humidity': 'Humidité',
+        },
 
-      // Profile
-      'subscription': 'الاشتراك',
+        'en': {
+          // Auth
+          'login': 'Login',
+          'email': 'Email',
+          'password': 'Password',
+          'language': 'Language',
+          'remember_me': 'Remember me',
+          'forgot_password': 'Forgot Password?',
+          'or': 'OR',
+          'google_login': 'Login with Google',
+          'create_account': 'Create Account',
+          'no_account': "Don't have an account?",
+          'full_name': 'Full Name',
+          'cin_number': 'CIN Number',
+          'confirm_password': 'Confirm Password',
+          'register_btn': 'Register',
+          'already_have_account': 'Already have an account?',
 
-      // General
-      'overview': 'نظرة عامة',
-      'humidity': 'الرطوبة',
-    },
+          // Hints & Messages
+          'email_hint': 'your_name@example.com',
+          'password_hint': '********',
+          'full_name_hint': 'Enter your full name',
+          'cin_hint': 'National ID number',
+          'confirm_hint': 'Repeat your password',
+          'erreur': 'Error',
+          'success': 'Success',
+          'veuillez_remplir_champs': 'Please fill all fields',
+          'welcome': 'Welcome',
+          'google_error': 'Google Login Failed',
+          'password_too_weak': 'Weak password (8 characters min)',
+          'passwords_not_match': 'Passwords do not match',
+          'account_created': 'Account created successfully',
+          'user_not_found': 'User not found',
+          'loading': 'Loading...',
 
-    'fr': {
-      // Auth
-      'login': 'Connexion',
-      'email': 'Email',
-      'password': 'Mot de passe',
-      'language': 'Langue',
+          // Forgot Password
+          'reset_title': 'Reset Password',
+          'enter_your_mail': 'Please enter your email to reset password',
+          'reset_password_btn': 'Reset Password',
+          'back_to_login': 'Back to login',
+          'email_sent_success': 'Recovery link has been sent.',
+          'veuillez_saisir_email_valide': 'Please enter a valid email',
 
-      'remember_me': 'Se souvenir de moi',
-      'forgot_password': 'Mot de passe oublié ?',
-      'or': 'OU',
-      'google_login': 'Connexion avec Google',
-      'create_account': 'Créer un compte',
-
-      'erreur': 'Erreur',
-      'success': 'Succès',
-      'veuillez_remplir_champs': 'Veuillez remplir tous les champs',
-      'welcome': 'Bienvenue',
-      'google_error': 'Échec de la connexion Google',
-
-      'full_name': 'Nom complet',
-      'confirm_password': 'Confirmer le mot de passe',
-      'register_btn': "S'inscrire",
-      'already_have_account': 'Déjà un compte ? Se connecter',
-      'password_too_weak':
-          'Mot de passe faible (8 caractères : lettres, chiffres, symboles)',
-      'passwords_not_match': 'Les mots de passe ne correspondent pas',
-      'account_created': 'Compte créé avec succès',
-
-      'enter_your_mail': 'Veuillez entrer votre email pour réinitialiser le mot de passe',
-  'reset_password_btn': 'Réinitialiser le mot de passe',
-  'back_to_login': 'Retour à la connexion',
-  'email_sent_success': 'Un lien de récupération a été envoyé.',
-  'veuillez_saisir_email_valide': 'Veuillez saisir un email valide',
-
-      // Navigation
-      'dashboard': 'Tableau de bord',
-      'zones': 'Zones',
-      'alerts': 'Alertes',
-      'profile': 'Profil',
-
-      // Dashboard
-      'soil': 'Humidité du sol',
-      'temperature': 'Température',
-      'pump': 'État de la pompe',
-      'battery': 'Batterie',
-
-      // Profile
-      'subscription': 'Abonnement',
-
-      // General
-      'overview': 'Aperçu',
-      'humidity': 'Humidité',
-    },
-
-    'en': {
-      // Auth
-      'login': 'Login',
-      'email': 'Email',
-      'password': 'Password',
-      'language': 'Language',
-      'remember_me': 'Remember me',
-      'forgot_password': 'Forgot Password?',
-      'or': 'OR',
-      'google_login': 'Login with Google',
-      'create_account': 'Create Account',
-      'erreur': 'Error',
-      'success': 'Success',
-      'veuillez_remplir_champs': 'Please fill all fields',
-      'welcome': 'Welcome',
-      'google_error': 'Google Login Failed',
-      'full_name': 'Full Name',
-      'confirm_password': 'Confirm Password',
-      'register_btn': 'Register',
-      'already_have_account': 'Already have an account? Login',
-      'password_too_weak': 'Weak password (8 chars: letters, numbers, symbols)',
-      'passwords_not_match': 'Passwords do not match',
-      'account_created': 'Account created successfully',
-
-      // Navigation
-      'dashboard': 'Dashboard',
-      'zones': 'Zones',
-      'alerts': 'Alerts',
-      'profile': 'Profile',
-
-      // Dashboard
-      'soil': 'Soil Humidity',
-      'temperature': 'Temperature',
-      'pump': 'Pump Status',
-      'battery': 'Battery',
-
-      // Profile
-      'subscription': 'Subscription',
-
-      // General
-      'overview': 'Overview',
-      'humidity': 'Humidity',
-    },
-  };
+          // Navigation & Dashboard
+          'dashboard': 'Dashboard',
+          'zones': 'Zones',
+          'alerts': 'Alerts',
+          'profile': 'Profile',
+          'soil': 'Soil Humidity',
+          'temperature': 'Temperature',
+          'pump': 'Pump Status',
+          'battery': 'Battery',
+          'subscription': 'Subscription',
+          'overview': 'Overview',
+          'humidity': 'Humidity',
+        },
+      };
 }

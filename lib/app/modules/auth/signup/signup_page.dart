@@ -16,7 +16,6 @@ class SignupPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // --- HEADER VERT AVEC LOGO ---
             Container(
               height: 200,
               width: double.infinity,
@@ -30,63 +29,48 @@ class SignupPage extends StatelessWidget {
                     child: const Icon(Icons.eco, color: AppColors.primary, size: 40),
                   ),
                   const SizedBox(height: 10),
-                  Text('create_account'.tr, 
-                    style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+                  Text('create_account'.tr, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildInputField(controller.nameController, 'full_name'.tr, Icons.person_outline),
+                  _buildLabel('full_name'.tr),
+                  _buildInputField(controller.nameController, 'full_name_hint'.tr, Icons.person_outline),
                   const SizedBox(height: 15),
-                  _buildInputField(controller.emailController, 'email'.tr, Icons.email_outlined),
+
+                  _buildLabel('email'.tr),
+                  _buildInputField(controller.emailController, 'email_hint'.tr, Icons.email_outlined, keyboardType: TextInputType.emailAddress),
                   const SizedBox(height: 15),
-                  _buildInputField(controller.cinController, 'CIN', Icons.badge_outlined),
+
+                  _buildLabel('cin_number'.tr),
+                  _buildInputField(controller.cinController, 'cin_hint'.tr, Icons.badge_outlined),
                   const SizedBox(height: 15),
                   
-                  // Mot de passe
-                  Obx(() => _buildInputField(
-                    controller.passwordController, 
-                    'password'.tr, 
-                    Icons.lock_outline,
-                    isPass: true,
-                    hidden: controller.isPasswordHidden.value,
-                    onToggle: controller.togglePassword,
-                  )),
+                  _buildLabel('password'.tr),
+                  Obx(() => _buildInputField(controller.passwordController, 'password_hint'.tr, Icons.lock_outline, isPass: true, hidden: controller.isPasswordHidden.value, onToggle: controller.togglePassword)),
                   const SizedBox(height: 15),
 
-                  // Confirmation
-                  Obx(() => _buildInputField(
-                    controller.confirmPasswordController, 
-                    'confirm_password'.tr, 
-                    Icons.lock_reset,
-                    isPass: true,
-                    hidden: controller.isConfirmHidden.value,
-                    onToggle: controller.toggleConfirm,
-                  )),
+                  _buildLabel('confirm_password'.tr),
+                  Obx(() => _buildInputField(controller.confirmPasswordController, 'confirm_hint'.tr, Icons.lock_reset, isPass: true, hidden: controller.isConfirmHidden.value, onToggle: controller.toggleConfirm)),
 
                   const SizedBox(height: 30),
+                  Obx(() => AppButton(title: 'register_btn'.tr.toUpperCase(), isLoading: controller.isLoading.value, onTap: () => controller.signup())),
 
-                  AppButton(
-                    title: 'register_btn'.tr.toUpperCase(),
-                    onTap: () => controller.signup(),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Lien Already have an account
+                  const SizedBox(height: 25),
                   Center(
                     child: GestureDetector(
                       onTap: () => Get.back(),
-                      child: Text(
-                        'already_have_account'.tr,
-                        style: const TextStyle(
-                          decoration: TextDecoration.underline, // Souligné
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
+                      child: RichText(
+                        text: TextSpan(
+                          text: "${'already_have_account'.tr} ",
+                          style: const TextStyle(color: Colors.black54, fontWeight: FontWeight.bold),
+                          children: [
+                            TextSpan(text: 'login'.tr, style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, decoration: TextDecoration.underline)),
+                          ],
                         ),
                       ),
                     ),
@@ -100,14 +84,17 @@ class SignupPage extends StatelessWidget {
     );
   }
 
-  // Helper pour les champs de saisie
-  Widget _buildInputField(TextEditingController ctrl, String hint, IconData icon, 
-      {bool isPass = false, bool hidden = false, VoidCallback? onToggle}) {
+  Widget _buildLabel(String label) => Padding(padding: const EdgeInsets.only(bottom: 8.0), child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black87)));
+
+  Widget _buildInputField(TextEditingController ctrl, String hint, IconData icon, {bool isPass = false, bool hidden = false, VoidCallback? onToggle, TextInputType keyboardType = TextInputType.text}) {
     return TextField(
       controller: ctrl,
       obscureText: isPass ? hidden : false,
+      keyboardType: keyboardType,
+      style: const TextStyle(fontWeight: FontWeight.bold),
       decoration: InputDecoration(
         hintText: hint,
+        hintStyle: const TextStyle(fontWeight: FontWeight.normal),
         prefixIcon: Icon(icon),
         suffixIcon: isPass ? IconButton(icon: Icon(hidden ? Icons.visibility_off : Icons.visibility), onPressed: onToggle) : null,
         filled: true,

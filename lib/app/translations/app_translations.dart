@@ -58,6 +58,23 @@ class AppTranslations extends Translations {
           'subscription': 'الاشتراك',
           'overview': 'نظرة عامة',
           'humidity': 'الرطوبة',
+          'general_status': 'الحالة العامة',
+          'analysis_24h': 'تحليل (24 ساعة)',
+          'quick_access': 'وصول سريع',
+
+          // Thresholds Page (NOUVEAU)
+          'irrigation_thresholds': 'إعدادات الري',
+          'min_humidity': 'الحد الأدنى للرطوبة',
+          'max_humidity': 'الحد الأقصى للرطوبة',
+          'irrigation_duration': 'مدة الري',
+          'save_settings': 'حفظ الإعدادات',
+          'thresholds_desc': 'قم بتكوين مستويات الري التلقائي الخاصة بك.',
+          'min_hum_desc': 'تشغيل المضخة إذا كانت الرطوبة < ',
+          'max_hum_desc': 'إيقاف المضخة إذا كانت الرطوبة > ',
+          'settings_updated': 'تم تحديث الإعدادات بنجاح',
+          'history': 'السجل',
+          'map': 'الخريطة',
+          'thresholds': 'الحدود',
         },
 
         'fr': {
@@ -115,6 +132,26 @@ class AppTranslations extends Translations {
           'subscription': 'Abonnement',
           'overview': 'Aperçu',
           'humidity': 'Humidité',
+          'general_status': 'STATUT GÉNÉRAL',
+          'analysis_24h': 'ANALYSE (24h)',
+          'quick_access': 'ACCÈS RAPIDE',
+          'history': 'Historique',
+          'map': 'Carte',
+          'thresholds': 'Seuils',
+
+          // Thresholds Page (NOUVEAU)
+          'irrigation_thresholds': 'Seuils d\'irrigation',
+          'min_humidity': 'Humidité Minimum',
+          'max_humidity': 'Humidité Maximum',
+          'irrigation_duration': 'Durée d\'irrigation',
+          'save_settings': 'ENREGISTRER',
+          'thresholds_desc': 'Configurez vos seuils pour optimiser l\'arrosage.',
+          'min_hum_desc': 'Allume la pompe si humidité < ',
+          'max_hum_desc': 'Arrête la pompe si humidité > ',
+          'settings_updated': 'Paramètres mis à jour avec succès',
+          'history': 'Historique',
+          'map': 'Carte',
+          'thresholds': 'Seuils',
         },
 
         'en': {
@@ -163,7 +200,7 @@ class AppTranslations extends Translations {
           // Navigation & Dashboard
           'dashboard': 'Dashboard',
           'zones': 'Zones',
-          'alerts': 'Alerts',
+          'alerts': 'Alertes',
           'profile': 'Profile',
           'soil': 'Soil Humidity',
           'temperature': 'Temperature',
@@ -172,6 +209,23 @@ class AppTranslations extends Translations {
           'subscription': 'Subscription',
           'overview': 'Overview',
           'humidity': 'Humidity',
+          'general_status': 'GENERAL STATUS',
+          'analysis_24h': 'ANALYSIS (24h)',
+          'quick_access': 'QUICK ACCESS',
+
+          // Thresholds Page (NOUVEAU)
+          'irrigation_thresholds': 'Irrigation Thresholds',
+          'min_humidity': 'Min Humidity',
+          'max_humidity': 'Max Humidity',
+          'irrigation_duration': 'Irrigation Duration',
+          'save_settings': 'SAVE SETTINGS',
+          'thresholds_desc': 'Configure your automated irrigation levels.',
+          'min_hum_desc': 'Turns pump ON if humidity < ',
+          'max_hum_desc': 'Turns pump OFF if humidity > ',
+          'settings_updated': 'Settings updated successfully',
+          'history': 'History',
+          'map': 'Map',
+          'thresholds': 'Thresholds',
         },
       };
 }

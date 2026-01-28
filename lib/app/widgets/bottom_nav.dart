@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../modules/dashboard/dashboard_controller.dart';
+// 1. Importe bien ton RootController
+import '../modules/root/root_controller.dart'; 
 
 class BottomNav extends StatelessWidget {
   BottomNav({super.key});
 
-  final controller = Get.find<DashboardController>();
+  // 2. Cherche le RootController au lieu du DashboardController
+  final controller = Get.find<RootController>();
 
   @override
   Widget build(BuildContext context) {
     return Obx(() => BottomNavigationBar(
+          // 3. Utilise currentIndex du RootController
           currentIndex: controller.currentIndex.value,
-          onTap: controller.changeTab,
+          // 4. Utilise la méthode changePage que nous avons créée dans le RootController
+          onTap: controller.changePage, 
           items: [
             BottomNavigationBarItem(
               icon: const Icon(Icons.dashboard),

@@ -4,43 +4,55 @@ class InfoCard extends StatelessWidget {
   final String title;
   final String value;
   final IconData icon;
+  final Color statusColor; // Ajout de la couleur dynamique
 
   const InfoCard({
     super.key,
     required this.title,
     required this.value,
     required this.icon,
+    this.statusColor = Colors.green, // Vert par défaut
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 3,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: Colors.green),
-            ),
-            const SizedBox(width: 16),
-            Column(
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: statusColor.withOpacity(0.1),
+            child: Icon(icon, color: statusColor, size: 20),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title,
-                    style: Theme.of(context).textTheme.bodySmall),
-                const SizedBox(height: 4),
-                Text(value,
-                    style: Theme.of(context).textTheme.titleLarge),
+                Text(title, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               ],
-            )
-          ],
-        ),
+            ),
+          ),
+          // Le petit indicateur de statut (Image 2)
+          Container(
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(color: statusColor, shape: BoxShape.circle),
+          ),
+        ],
       ),
     );
   }

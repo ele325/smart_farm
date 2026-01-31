@@ -19,4 +19,5 @@ abstract class Routes {
   static const pump = '/pump';
   static const history = '/history';
   static const map = '/map';
+  static const variateurControl = '/variateur-control';
 }

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'pump_controller.dart';
 
 class PumpPage extends StatelessWidget {
+  PumpPage({super.key});
   final controller = Get.put(PumpController());
 
   @override

@@ -18,7 +18,7 @@ class LoginController extends GetxController {
   var isPasswordHidden = true.obs;
   var isLoading = false.obs;
 
-  // --- NOUVEAU : Variable pour "Se souvenir de moi" ---
+  // Variable pour "Se souvenir de moi"
   var rememberMe = false.obs;
 
   @override
@@ -32,7 +32,6 @@ class LoginController extends GetxController {
     }
   }
 
-  // --- NOUVEAU : Méthode pour basculer la case à cocher ---
   void toggleRememberMe(bool? value) {
     rememberMe.value = value ?? false;
   }
@@ -41,16 +40,19 @@ class LoginController extends GetxController {
     isPasswordHidden.value = !isPasswordHidden.value;
   }
 
-  // --- CONNEXION CLASSIQUE EMAIL/PASSWORD ---
+  // --- CONNEXION CLASSIQUE ---
   Future<void> login() async {
     String email = emailController.text.trim();
     String password = passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
-      Get.snackbar("error".tr, "fill_all_fields".tr,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.redAccent,
-          colorText: Colors.white);
+      Get.snackbar(
+        "error".tr, 
+        "fill_all_fields".tr,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
       return;
     }
 
@@ -62,7 +64,7 @@ class LoginController extends GetxController {
       );
 
       if (userCredential.user != null) {
-        // --- LOGIQUE DE SAUVEGARDE PERSISTANTE ---
+        // Sauvegarde persistante
         if (rememberMe.value) {
           _storage.write('remember_me', true);
           _storage.write('saved_email', email);
@@ -79,19 +81,27 @@ class LoginController extends GetxController {
       }
     } on FirebaseAuthException catch (e) {
       String errorMessage = "auth_failed".tr;
-      if (e.code == 'user-not-found') errorMessage = "user_not_found".tr;
-      else if (e.code == 'wrong-password') errorMessage = "wrong_password".tr;
       
-      Get.snackbar("error".tr, errorMessage,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.redAccent,
-          colorText: Colors.white);
+      // AJOUT DES ACCOLADES ICI
+      if (e.code == 'user-not-found') {
+        errorMessage = "user_not_found".tr;
+      } else if (e.code == 'wrong-password') {
+        errorMessage = "wrong_password".tr;
+      }
+      
+      Get.snackbar(
+        "error".tr, 
+        errorMessage,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
     } finally {
       isLoading.value = false;
     }
   }
 
-  // ---  CONNEXION GOOGLE ---
+  // --- CONNEXION GOOGLE ---
   Future<void> loginWithGoogle() async {
     try {
       isLoading.value = true;
@@ -113,9 +123,13 @@ class LoginController extends GetxController {
         }
       }
     } catch (error) {
-      Get.snackbar("error".tr, "google_error".tr,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.redAccent);
+      Get.snackbar(
+        "error".tr, 
+        "google_error".tr,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
     } finally {
       isLoading.value = false;
     }

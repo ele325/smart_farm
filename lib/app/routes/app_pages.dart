@@ -11,11 +11,12 @@ import '../modules/history/history_page.dart';
 import '../modules/alerts/alerts_page.dart';
 import '../modules/map/map_page.dart';
 import '../modules/profile/profile_page.dart';
+import '../modules/control/variateur_control_page.dart';
 import 'routes.dart';
 
 class AppPages {
   static final pages = [
-    // Auth - Corrigé ici
+    // Auth pages
     GetPage(name: Routes.login, page: () => LoginPage()),
     GetPage(name: Routes.forgotPassword, page: () => ForgotPasswordPage()),
     GetPage(name: Routes.signup, page: () => SignupPage()), 
@@ -28,7 +29,21 @@ class AppPages {
     GetPage(name: Routes.zones, page: () => ZonesPage()),
     GetPage(name: Routes.thresholds, page: () => ThresholdsPage()),
     GetPage(name: Routes.pump, page: () => PumpPage()),
-    GetPage(name: Routes.history, page: () => HistoryPage()),
+    GetPage(name: Routes.variateurControl, page: () => VariateurPage()),
+    
+    // Correction de la route History avec sécurité anti-crash
+    GetPage(
+      name: Routes.history, 
+      page: () {
+        // On récupère les arguments en vérifiant s'ils ne sont pas nuls
+        final args = Get.arguments ?? {'name': 'Zone', 'id': ''};
+        return HistoryPage(
+          zoneName: args['name'], 
+          zoneId: args['id'],
+        );
+      },
+    ),
+
     GetPage(name: Routes.alerts, page: () => AlertsPage()),
     GetPage(name: Routes.map, page: () => MapPage()),
     GetPage(name: Routes.profile, page: () => ProfilePage()),

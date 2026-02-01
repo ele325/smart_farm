@@ -8,8 +8,6 @@ import '../../../routes/routes.dart';
 class LoginController extends GetxController {
   final _storage = GetStorage();
   final _auth = FirebaseAuth.instance;
-  
-  // Configuration Google Sign-In
   final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: <String>['email']);
 
   final emailController = TextEditingController();
@@ -17,14 +15,11 @@ class LoginController extends GetxController {
 
   var isPasswordHidden = true.obs;
   var isLoading = false.obs;
-
-  // Variable pour "Se souvenir de moi"
   var rememberMe = false.obs;
 
   @override
   void onInit() {
     super.onInit();
-    // Charger les identifiants sauvegardés au démarrage
     rememberMe.value = _storage.read('remember_me') ?? false;
     if (rememberMe.value) {
       emailController.text = _storage.read('saved_email') ?? "";
@@ -32,13 +27,8 @@ class LoginController extends GetxController {
     }
   }
 
-  void toggleRememberMe(bool? value) {
-    rememberMe.value = value ?? false;
-  }
-
-  void togglePasswordVisibility() {
-    isPasswordHidden.value = !isPasswordHidden.value;
-  }
+  void toggleRememberMe(bool? value) => rememberMe.value = value ?? false;
+  void togglePasswordVisibility() => isPasswordHidden.value = !isPasswordHidden.value;
 
   // --- CONNEXION CLASSIQUE ---
   Future<void> login() async {
@@ -46,56 +36,20 @@ class LoginController extends GetxController {
     String password = passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
-      Get.snackbar(
-        "error".tr, 
-        "fill_all_fields".tr,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-      );
+      Get.snackbar("error".tr, "fill_all_fields".tr, backgroundColor: Colors.redAccent, colorText: Colors.white);
       return;
     }
 
     try {
       isLoading.value = true;
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(email: email, password: password);
 
       if (userCredential.user != null) {
-        // Sauvegarde persistante
-        if (rememberMe.value) {
-          _storage.write('remember_me', true);
-          _storage.write('saved_email', email);
-          _storage.write('saved_password', password);
-        } else {
-          _storage.remove('remember_me');
-          _storage.remove('saved_email');
-          _storage.remove('saved_password');
-        }
-
-        _storage.write('isLoggedIn', true);
-        _storage.write('user_email', email);
+        _saveUserSession(email, password); // Sauvegarde des infos
         Get.offAllNamed(Routes.dashboard);
       }
     } on FirebaseAuthException catch (e) {
-      String errorMessage = "auth_failed".tr;
-      
-      // AJOUT DES ACCOLADES ICI
-      if (e.code == 'user-not-found') {
-        errorMessage = "user_not_found".tr;
-      } else if (e.code == 'wrong-password') {
-        errorMessage = "wrong_password".tr;
-      }
-      
-      Get.snackbar(
-        "error".tr, 
-        errorMessage,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-      );
+      _handleAuthError(e);
     } finally {
       isLoading.value = false;
     }
@@ -118,21 +72,38 @@ class LoginController extends GetxController {
 
         if (userCredential.user != null) {
           _storage.write('isLoggedIn', true);
-          _storage.write('user_email', googleUser.email);
+          _storage.write('user_email', googleUser.email); // Sauvegarde l'email Google
+          _storage.write('user_name', googleUser.displayName); // Sauvegarde le nom Google
           Get.offAllNamed(Routes.dashboard);
         }
       }
     } catch (error) {
-      Get.snackbar(
-        "error".tr, 
-        "google_error".tr,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-      );
+      Get.snackbar("error".tr, "google_error".tr, backgroundColor: Colors.redAccent, colorText: Colors.white);
     } finally {
       isLoading.value = false;
     }
+  }
+
+  void _saveUserSession(String email, String password) {
+    _storage.write('isLoggedIn', true);
+    _storage.write('user_email', email); // L'email qui sera affiché sur le profil
+    
+    if (rememberMe.value) {
+      _storage.write('remember_me', true);
+      _storage.write('saved_email', email);
+      _storage.write('saved_password', password);
+    } else {
+      _storage.remove('remember_me');
+      _storage.remove('saved_email');
+      _storage.remove('saved_password');
+    }
+  }
+
+  void _handleAuthError(FirebaseAuthException e) {
+    String errorMessage = "auth_failed".tr;
+    if (e.code == 'user-not-found') errorMessage = "user_not_found".tr;
+    else if (e.code == 'wrong-password') errorMessage = "wrong_password".tr;
+    Get.snackbar("error".tr, errorMessage, backgroundColor: Colors.redAccent, colorText: Colors.white);
   }
 
   @override

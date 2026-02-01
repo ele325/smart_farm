@@ -13,75 +13,64 @@ class ZonesPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('zones_management'.tr),
         backgroundColor: Colors.green[800],
+        foregroundColor: Colors.white,
         centerTitle: true,
       ),
       body: Obx(() {
-        // État de chargement initial
         if (controller.zones.isEmpty) {
-          return const Center(
-            child: CircularProgressIndicator(color: Colors.green),
-          );
+          return const Center(child: CircularProgressIndicator(color: Colors.green));
         }
 
-        // Affichage dynamique en grille (parfait pour tes 8 zones)
         return GridView.builder(
           padding: const EdgeInsets.all(12),
           itemCount: controller.zones.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // 2 colonnes pour voir les parcelles
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: 0.9, // Ajuste la hauteur des cartes
+            crossAxisCount: 2, 
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            childAspectRatio: 0.8, // Ajusté pour donner plus de place verticale
           ),
-          itemBuilder: (context, index) {
-            final zone = controller.zones[index];
-            return _buildZoneCard(zone);
-          },
+          itemBuilder: (context, index) => _construireCarteZone(controller.zones[index]),
         );
       }),
     );
   }
 
-  Widget _buildZoneCard(Zone zone) {
-    return Obx(() => Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: Container(
-        decoration: BoxDecoration(
+  Widget _construireCarteZone(Zone zone) {
+    return Obx(() {
+      bool estEnAlerte = zone.humidity < 30;
+      return Card(
+        elevation: estEnAlerte ? 6 : 2,
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            colors: zone.enabled.value 
-              ? [Colors.blue.shade50, Colors.white] 
-              : [Colors.grey.shade100, Colors.white],
-          ),
+          side: BorderSide(color: estEnAlerte ? Colors.red : Colors.transparent, width: 2),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(8.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.water_drop, 
-                color: zone.enabled.value ? Colors.blue : Colors.grey, 
-                size: 40
+                estEnAlerte ? Icons.warning_amber_rounded : Icons.water_drop,
+                color: estEnAlerte ? Colors.red : (zone.enabled.value ? Colors.blue : Colors.grey),
+                size: 35,
               ),
-              const SizedBox(height: 10),
-              Text(
-                zone.name,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-              Text("${'humidity'.tr}: ${zone.humidity}%"),
+              const SizedBox(height: 5),
+              Text(zone.name, style: const TextStyle(fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
+              Text("${'soil'.tr}: ${zone.humidity}%", style: TextStyle(color: estEnAlerte ? Colors.red : Colors.black54, fontSize: 12)),
               const Spacer(),
               Switch(
                 value: zone.enabled.value,
-                onChanged: (val) => controller.toggleZone(zone, val),
-                activeColor: Colors.blue,
+                onChanged: (val) => controller.basculerPompe(zone, val),
+                activeColor: estEnAlerte ? Colors.red : Colors.blue,
+              ),
+              FittedBox(
+                child: Text(zone.enabled.value ? 'running'.tr : 'stopped'.tr, 
+                style: TextStyle(color: zone.enabled.value ? Colors.blue : Colors.grey, fontSize: 10)),
               ),
             ],
           ),
         ),
-      ),
-    ));
+      );
+    });
   }
 }

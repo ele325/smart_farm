@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+// Modèle de donnée pour une Zone agricole
 class Zone {
   final String id;
   final String name;
@@ -15,25 +16,26 @@ class Zone {
 class ZonesController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   
-  // RxList est une liste observable qui déclenche l'UI à chaque changement
+  // Liste réactive (Observable) des zones
   RxList<Zone> zones = <Zone>[].obs;
 
   @override
   void onInit() {
     super.onInit();
-    // Liaison dynamique : dès que Firebase change, 'zones' se met à jour
-    zones.bindStream(listenToZones());
+    // Liaison temps réel : l'UI réagit instantanément aux modifs Firebase
+    zones.bindStream(ecouterLesZones());
   }
 
-  Stream<List<Zone>> listenToZones() {
+  // Stream qui récupère les données de la collection 'zones'
+  Stream<List<Zone>> ecouterLesZones() {
     return _firestore.collection('zones')
-        .orderBy('name') // Pour garder l'ordre alphabétique (Zone 1, 2, 3...)
+        .orderBy('name') 
         .snapshots()
         .map((query) {
       return query.docs.map((doc) {
         return Zone(
           id: doc.id,
-          name: doc.get('name') ?? 'Zone sans nom',
+          name: doc.get('name') ?? 'Zone Inconnue',
           status: doc.get('enabled') ?? false,
           humidity: (doc.get('humidity') ?? 0).toInt(),
         );
@@ -41,15 +43,17 @@ class ZonesController extends GetxController {
     });
   }
 
-  void toggleZone(Zone zone, bool newValue) async {
+  // Actionneur : Change l'état de la pompe dans Firebase
+  void basculerPompe(Zone zone, bool nouvelleValeur) async {
     try {
-      zone.enabled.value = newValue; // Mise à jour immédiate à l'écran
+      zone.enabled.value = nouvelleValeur; 
       await _firestore.collection('zones').doc(zone.id).update({
-        'enabled': newValue,
+        'enabled': nouvelleValeur,
       });
     } catch (e) {
-      zone.enabled.value = !newValue; // Retour arrière en cas d'erreur
-      Get.snackbar("Erreur", "Connexion perdue", backgroundColor: Colors.red, colorText: Colors.white);
+      zone.enabled.value = !nouvelleValeur; // Retour arrière si erreur réseau
+      Get.snackbar('erreur'.tr, 'google_error'.tr, 
+          backgroundColor: Colors.red, colorText: Colors.white);
     }
   }
 }

@@ -20,7 +20,7 @@ class AppTranslations extends Translations {
           'confirm_password': 'تأكيد كلمة المرور',
           'register_btn': 'إنشاء حساب',
           'already_have_account': 'لديك حساب بالفعل؟',
-          
+
           // Hints & Messages
           'email_hint': 'votre_nom@exemple.com',
           'password_hint': '********',
@@ -69,7 +69,10 @@ class AppTranslations extends Translations {
           'config_updated': 'تم تحديث التكوين',
           'pump_logic_desc': 'المضخة ستلتزم بهذه الحدود الجديدة.',
 
-          //variateur
+          // Zones
+          'zones_management': 'إدارة مناطق الري',
+
+          // Variateur
           'vfd_control': 'التحكم في المحول',
           'pump_current_state': 'حالة المضخة الحالية',
           'running': 'قيد التشغيل',
@@ -82,8 +85,60 @@ class AppTranslations extends Translations {
           'low_flow': 'تدفق منخفض',
           'normal_flow': 'تدفق عادي',
           'boost_flow': 'تدفق عالي',
-        },
 
+          // Map & Legend
+          'map_legend': 'دليل الخريطة',
+          'stress_hydrique': 'الإجهاد المائي',
+          'azote': 'نيتروجين',
+          'maladies': 'أورام/أمراض',
+          'critique': 'حرج',
+          'attention': 'انتباه',
+          'optimal': 'مثالي',
+          'water': 'الماء',
+          'health': 'الصحة',
+          'open_history': 'فتح السجل الحقيقي',
+          'irrigation_recommended': '🚨 تربة جافة: يوصى بالري.',
+          'stable_state': '✅ حالة مستقرة.',
+
+          // Profile
+          'Abonnement actuel': 'الاشتراك الحالي',
+          'Achat de services additionnels': 'شراء خدمات إضافية',
+          'Facturation et historique': 'الفواتير والسجل',
+          'Analyse de croissance': 'تحليل النمو',
+          'Plan de fertilisation': 'خطة التسميد',
+          'Abonnement Annuel': 'اشتراك سنوي',
+          'Se déconnecter': 'تسجيل الخروج',
+          'Galerie': 'معرض الصور',
+          'Appareil Photo': 'الكاميرا',
+          'Votre demande pour': 'طلبك لـ',
+          'est en cours': 'قيد المعالجة',
+          'Facture': 'الفاتورة',
+          'téléchargée': 'تم تحميلها',
+
+          // Parametres
+          'app_preferences': 'تفضيلات التطبيق',
+          'units_measure': 'وحدات القياس',
+          'help_support': 'المساعدة والدعم RoboCare',
+          'user_guide': 'دليل الاستخدام',
+          'call_support': 'اتصل بالدعم',
+          'send_email': 'إرسال بريد إلكتروني',
+          'language_select': 'لغة التطبيق',
+          'user_guide_title': 'دليل استخدام SmartFarm',
+          'water_management': 'إدارة المياه',
+          'water_management_desc': 'تحقق يومياً من مؤشر الإجهاد المائي.',
+          'ia_fertilization': 'التسميد بالذكاء الاصطناعي',
+          'ia_fertilization_desc': 'اتبع توصيات النيتروجين لتوفير التكاليف.',
+          'satellite_imagery': 'صور الأقمار الصناعية',
+          'satellite_imagery_desc': 'الألوان الداكنة تشير إلى حيوية نباتية قوية.',
+          'understood': 'مفهوم',
+
+          // History
+          'history_management': 'إدارة السجل',
+          'humidity_24h': 'الرطوبة خلال آخر 24 ساعة',
+          'sensor_source': 'البيانات قادمة من مستشعر BGT-SMPS',
+          'no_data': 'لم يتم تسجيل بيانات في السجل',
+          'humidity_analysis': 'تحليل الرطوبة (%)',
+        },
         'fr': {
           // Auth
           'login': 'Connexion',
@@ -150,21 +205,59 @@ class AppTranslations extends Translations {
           'config_updated': 'Configuration mise à jour',
           'pump_logic_desc': 'La pompe respectera désormais ces nouveaux seuils.',
 
-          //variateur
-          'vfd_control': 'Contrôle Variateur',
-          'pump_current_state': 'État actuel de la pompe',
-          'running': 'En rotation',
-          'stopped': "À l'arrêt",
-          'target_speed': 'Vitesse cible',
-          'actuator': 'Actionneur',
-          'stop_pump': 'ARRÊTER LA POMPE',
-          'start_pump': 'DÉMARRER LA POMPE',
-          'freq_config': 'Configuration de la fréquence',
-          'low_flow': 'Eco',
-          'normal_flow': 'Normal',
-          'boost_flow': 'Boost',
-        },
+          // Map & Legend
+          'map_legend': 'Légende',
+          'stress_hydrique': 'Stress Hydrique',
+          'azote': 'Azote',
+          'maladies': 'Maladies',
+          'critique': 'Critique',
+          'attention': 'Attention',
+          'optimal': 'Optimal',
+          'water': 'Eau',
+          'health': 'Santé',
+          'open_history': 'Ouvrir l\'historique réel',
+          'irrigation_recommended': '🚨 Sol sec : Irrigation recommandée.',
+          'stable_state': '✅ État stable.',
 
+          // History
+          'history_management': 'Gestion de l\'historique',
+          'humidity_24h': 'Humidité sur les dernières 24h',
+          'sensor_source': 'Données provenant du capteur BGT-SMPS',
+          'no_data': 'Aucune donnée enregistrée dans l\'historique',
+          'humidity_analysis': 'Analyse de l\'humidité (%)',
+
+          // Profile
+          'Abonnement actuel': 'Abonnement actuel',
+          'Achat de services additionnels': 'Achat de services',
+          'Facturation et historique': 'Facturation & Historique',
+          'Analyse de croissance': 'Analyse de croissance',
+          'Plan de fertilisation': 'Plan de fertilisation',
+          'Abonnement Annuel': 'Abonnement Annuel',
+          'Se déconnecter': 'Se déconnecter',
+          'Galerie': 'Galerie',
+          'Appareil Photo': 'Appareil Photo',
+          'Votre demande pour': 'Votre demande pour',
+          'est en cours': 'est en cours',
+          'Facture': 'Facture',
+          'téléchargée': 'téléchargée',
+
+          // Parametres
+          'app_preferences': 'Préférences App',
+          'units_measure': 'Unités de mesure',
+          'help_support': 'Aide & Support RoboCare',
+          'user_guide': 'Guide d\'utilisation',
+          'call_support': 'Appeler le support',
+          'send_email': 'Envoyer un Email',
+          'language_select': 'Langue de l\'application',
+          'user_guide_title': 'Guide d\'utilisation SmartFarm',
+          'water_management': 'Gestion de l\'eau',
+          'water_management_desc': 'Vérifiez quotidiennement l\'indice de stress hydrique.',
+          'ia_fertilization': 'Fertilisation IA',
+          'ia_fertilization_desc': 'Suivez les recommandations d\'azote pour économiser.',
+          'satellite_imagery': 'Imagerie Satellite',
+          'satellite_imagery_desc': 'Les couleurs sombres indiquent une forte vigueur.',
+          'understood': 'J\'AI COMPRIS',
+        },
         'en': {
           // Auth
           'login': 'Login',
@@ -203,7 +296,7 @@ class AppTranslations extends Translations {
           // Navigation & Dashboard
           'dashboard': 'Dashboard',
           'zones': 'Zones',
-          'alerts': 'Alertes',
+          'alerts': 'Alerts',
           'profile': 'Profile',
           'soil': 'Soil Humidity',
           'temperature': 'Temperature',
@@ -218,6 +311,27 @@ class AppTranslations extends Translations {
           'ph_soil': 'Soil pH',
           'pump_status': 'Pump Status',
 
+          // Map & Legend
+          'map_legend': 'Legend',
+          'stress_hydrique': 'Water Stress',
+          'azote': 'Nitrogen',
+          'maladies': 'Diseases',
+          'critique': 'Critical',
+          'attention': 'Warning',
+          'optimal': 'Optimal',
+          'water': 'Water',
+          'health': 'Health',
+          'open_history': 'Open Real History',
+          'irrigation_recommended': '🚨 Dry soil: Irrigation recommended.',
+          'stable_state': '✅ Stable state.',
+
+          // History
+          'history_management': 'History Management',
+          'humidity_24h': 'Humidity over the last 24h',
+          'sensor_source': 'Data from BGT-SMPS sensor',
+          'no_data': 'No data recorded in history',
+          'humidity_analysis': 'Humidity Analysis (%)',
+
           // Thresholds Page
           'irrigation_thresholds': 'Irrigation Thresholds',
           'thresholds_desc': 'Configure your automated irrigation levels.',
@@ -231,7 +345,10 @@ class AppTranslations extends Translations {
           'config_updated': 'Configuration updated',
           'pump_logic_desc': 'The pump will now follow these new thresholds.',
 
-          //variateur
+          // Zones
+          'zones_management': 'Zones Management',
+
+          // Variateur
           'vfd_control': 'VFD Control',
           'pump_current_state': 'Current pump status',
           'running': 'Running',
@@ -244,6 +361,34 @@ class AppTranslations extends Translations {
           'low_flow': 'Eco',
           'normal_flow': 'Normal',
           'boost_flow': 'Boost',
+
+          // Profile
+          'Abonnement actuel': 'Current Subscription',
+          'Achat de services additionnels': 'Purchase Services',
+          'Facturation et historique': 'Billing & History',
+          'Analyse de croissance': 'Growth Analysis',
+          'Plan de fertilisation': 'Fertilization Plan',
+          'Abonnement Annuel': 'Annual Subscription',
+          'Se déconnecter': 'Logout',
+          'Galerie': 'Gallery',
+          'Appareil Photo': 'Camera',
+
+          // Parametres
+          'app_preferences': 'App Preferences',
+          'units_measure': 'Measurement Units',
+          'help_support': 'Help & Support RoboCare',
+          'user_guide': 'User Guide',
+          'call_support': 'Call Support',
+          'send_email': 'Send Email',
+          'language_select': 'App Language',
+          'user_guide_title': 'SmartFarm User Guide',
+          'water_management': 'Water Management',
+          'water_management_desc': 'Daily check of water stress index.',
+          'ia_fertilization': 'AI Fertilization',
+          'ia_fertilization_desc': 'Follow nitrogen recommendations to save costs.',
+          'satellite_imagery': 'Satellite Imagery',
+          'satellite_imagery_desc': 'Dark colors indicate strong vegetation vigor.',
+          'understood': 'I UNDERSTAND',
         },
       };
-} 
+}

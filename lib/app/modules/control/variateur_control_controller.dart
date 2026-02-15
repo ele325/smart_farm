@@ -5,29 +5,35 @@ import 'package:flutter/foundation.dart';
 class VariateurControlController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final String docPath = 'commands/variateur';
 
-  // Le flux en temps réel que tout le monde écoute
-  Stream<DocumentSnapshot> get variateurStream => _firestore.doc(docPath).snapshots();
+  // Récupère le chemin du document variateur propre à l'utilisateur connecté
+  String get _userDocPath => 'users/${_auth.currentUser?.uid}/commands/variateur';
+  String get _userLogsPath => 'users/${_auth.currentUser?.uid}/pump_logs';
+
+  // Le flux en temps réel filtré par utilisateur
+  Stream<DocumentSnapshot> get variateurStream {
+    return _firestore.doc(_userDocPath).snapshots();
+  }
 
   Future<bool> sendCommand(double frequency, bool isOn) async {
     try {
       User? user = _auth.currentUser;
+      if (user == null) return false;
 
-      // Mise à jour du document principal (État actuel)
-      await _firestore.doc(docPath).set({
+      // 1. Mise à jour de la commande (Lue par l'ESP32)
+      // Note : On n'utilise pas .tr sur les clés Firebase pour garder la compatibilité avec l'ESP32
+      await _firestore.doc(_userDocPath).set({
         'frequency': frequency.roundToDouble(),
         'isOn': isOn,
         'lastUpdate': FieldValue.serverTimestamp(),
-        'updatedBy': user?.uid ?? "unknown_id",
-        'userEmail': user?.email ?? "unknown_user",
+        'userEmail': user.email ?? "unknown",
       }, SetOptions(merge: true));
 
-      // Ajout automatique à l'historique (Logs)
-      await _firestore.collection('pump_logs').add({
+      // 2. Ajout à l'historique personnel (Pour la page History)
+      await _firestore.collection(_userLogsPath).add({
         'action': isOn ? "ON" : "OFF",
         'freq': frequency.roundToDouble(),
-        'user': user?.email ?? "system",
+        'user': user.email ?? "system",
         'timestamp': FieldValue.serverTimestamp(),
       });
 

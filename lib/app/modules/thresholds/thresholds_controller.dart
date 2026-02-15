@@ -1,7 +1,66 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
 class ThresholdsController extends GetxController {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // Variables observables
   RxDouble minHumidity = 30.0.obs;
   RxDouble maxHumidity = 70.0.obs;
   RxInt duration = 15.obs;
+  RxBool isLoading = false.obs; // État pour le bouton de sauvegarde
+
+  @override
+  void onInit() {
+    super.onInit();
+    _listenToSettings();
+  }
+
+  void _listenToSettings() {
+    String? uid = _auth.currentUser?.uid;
+    if (uid != null) {
+      _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('config')
+          .doc('thresholds')
+          .snapshots()
+          .listen((snapshot) {
+        if (snapshot.exists) {
+          Map<String, dynamic> data = snapshot.data()!;
+          minHumidity.value = (data['minHumidity'] ?? 30.0).toDouble();
+          maxHumidity.value = (data['maxHumidity'] ?? 70.0).toDouble();
+          duration.value = (data['duration'] ?? 15).toInt();
+        }
+      });
+    }
+  }
+
+  Future<bool> saveSettings() async {
+    String? uid = _auth.currentUser?.uid;
+    if (uid == null) return false;
+
+    try {
+      isLoading.value = true;
+      await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('config')
+          .doc('thresholds')
+          .set({
+        'minHumidity': minHumidity.value,
+        'maxHumidity': maxHumidity.value,
+        'duration': duration.value,
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+      return true;
+    } catch (e) {
+      print("Erreur Firebase: $e");
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
 }

@@ -26,8 +26,15 @@ class SignupPage extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
-                    child: const Icon(Icons.eco, color: AppColors.primary, size: 40),
-                  ),
+                    child: Image.asset(
+                      'assets/images/robocare_logo.png',
+                      height: 70,
+                      width: 70,
+                      fit: BoxFit.contain,
+                      // Si l'image n'est pas trouvée, affiche une icône de secours
+                      errorBuilder: (context, error, stackTrace) => 
+                          const Icon(Icons.eco, color: AppColors.primary, size: 50),
+                    ),                  ),
                   const SizedBox(height: 10),
                   Text('create_account'.tr, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
                 ],

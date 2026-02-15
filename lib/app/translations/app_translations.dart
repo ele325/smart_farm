@@ -20,6 +20,10 @@ class AppTranslations extends Translations {
           'confirm_password': 'تأكيد كلمة المرور',
           'register_btn': 'إنشاء حساب',
           'already_have_account': 'لديك حساب بالفعل؟',
+          'enter_your_mail': 'أدخل بريدك الإلكتروني',
+          'reset_password_btn': 'إعادة تعيين كلمة المرور',
+          'back_to_login': 'العودة إلى تسجيل الدخول',
+          'reset_title': 'إعادة تعيين كلمة المرور',
 
           // Hints & Messages
           'email_hint': 'votre_nom@exemple.com',
@@ -38,6 +42,12 @@ class AppTranslations extends Translations {
           'user_not_found': 'هذا الحساب غير موجود',
           'loading': 'جاري التحميل...',
 
+          // --- Firestore & Backend Keys (Crucial pour le Controller) ---
+          'commands': 'commands', 
+          'variateur': 'variateur',
+          'isOn': 'isOn',
+          '📡 Sync Firestore : Pompe = ': '📡 تزامن بيانات Firestore: المضخة = ',
+
           // Navigation & Dashboard
           'dashboard': 'لوحة التحكم',
           'zones': 'مناطق الري',
@@ -55,6 +65,13 @@ class AppTranslations extends Translations {
           'thresholds': 'الإعدادات',
           'ph_soil': 'درجة الحموضة (pH)',
           'pump_status': 'حالة المضخة',
+          'ON': 'مشغلة',
+          'OFF': 'متوقفة',
+          'dd MMMM yyyy': 'yyyy MMMM dd', // Format date arabe
+          'HH:mm': 'HH:mm',
+          'Humidité du sol': 'رطوبة التربة',
+          'pH du sol': 'درجة حموضة التربة',
+          'État de la pompe': 'حالة المضخة',
 
           // Thresholds Page
           'irrigation_thresholds': 'إعدادات الري',
@@ -69,14 +86,26 @@ class AppTranslations extends Translations {
           'config_updated': 'تم تحديث التكوين',
           'pump_logic_desc': 'المضخة ستلتزم بهذه الحدود الجديدة.',
 
-          // Zones
-          'zones_management': 'إدارة مناطق الري',
+          'ph': 'مستوى الحموضة (pH)',
+          'ph_optimal': 'مستوى الحموضة مثالي للزراعة',
+          'ph_anormal': 'الحموضة غير مستقرة: تثبت من التربة',
+          'sol_trop_acide': 'تربة حامضية جداً (pH منخفض)',
+          'sol_trop_alcalin': 'تربة قلوية جداً (pH مرتفع)',
+          'optimal': 'حالة ممتازة',
+          'attention': 'انتباه مطلوب',
+          'irrigation_req': 'ينصح بالري الآن',
+          'alerte_maladie': 'خطر إصابة بمرض مكتشف',
+          'zone': 'منطقة',
+          'stable_state': 'حالة مستقرة',
 
+          // --- Zones Page ---
+          'zones_management': 'إدارة مناطق الري',
+          'Zone Inconnue': 'منطقة مجهولة',
+          'running': 'قيد التشغيل',
+          'stopped': 'متوقفة',
           // Variateur
           'vfd_control': 'التحكم في المحول',
           'pump_current_state': 'حالة المضخة الحالية',
-          'running': 'قيد التشغيل',
-          'stopped': 'متوقفة',
           'target_speed': 'السرعة المستهدفة',
           'actuator': 'المشغل',
           'stop_pump': 'إيقاف المضخة',
@@ -86,34 +115,44 @@ class AppTranslations extends Translations {
           'normal_flow': 'تدفق عادي',
           'boost_flow': 'تدفق عالي',
 
+          // --- UI Misc ---
+          'unknown_id': 'معرف غير معروف',
+          'unknown_user': 'مستخدم غير معروف',
+          'system': 'النظام',
+         
+
           // Map & Legend
           'map_legend': 'دليل الخريطة',
           'stress_hydrique': 'الإجهاد المائي',
           'azote': 'نيتروجين',
           'maladies': 'أورام/أمراض',
           'critique': 'حرج',
-          'attention': 'انتباه',
-          'optimal': 'مثالي',
           'water': 'الماء',
           'health': 'الصحة',
           'open_history': 'فتح السجل الحقيقي',
           'irrigation_recommended': '🚨 تربة جافة: يوصى بالري.',
-          'stable_state': '✅ حالة مستقرة.',
 
-          // Profile
-          'Abonnement actuel': 'الاشتراك الحالي',
-          'Achat de services additionnels': 'شراء خدمات إضافية',
-          'Facturation et historique': 'الفواتير والسجل',
-          'Analyse de croissance': 'تحليل النمو',
-          'Plan de fertilisation': 'خطة التسميد',
-          'Abonnement Annuel': 'اشتراك سنوي',
-          'Se déconnecter': 'تسجيل الخروج',
-          'Galerie': 'معرض الصور',
-          'Appareil Photo': 'الكاميرا',
-          'Votre demande pour': 'طلبك لـ',
-          'est en cours': 'قيد المعالجة',
-          'Facture': 'الفاتورة',
-          'téléchargée': 'تم تحميلها',
+          // Profile Page
+          'profil': 'الملف الشخصي',
+          'current_subscription': 'الاشتراك الحالي',
+          'purchase_services': 'شراء خدمات إضافية',
+          'billing_history': 'الفواتير والسجل',
+          'plan': 'الخطة',
+          'Premium': 'ممتاز',
+          'growth_analysis': 'تحليل النمو',
+          'fertilization_plan': 'خطة التسميد',
+          'annual_subscription': 'اشتراك سنوي',
+          'logout': 'تسجيل الخروج',
+          'gallery': 'معرض الصور',
+          'camera': 'الكاميرا',
+          'request_for': 'طلبك لـ',
+          'is_processing': 'قيد المعالجة',
+          'invoice': 'الفاتورة',
+          'downloaded': 'تم تحميلها',
+          'date': 'التاريخ',
+          'service': 'الخدمة',
+          'price': 'السعر',
+          'farmer': 'مزارع',
 
           // Parametres
           'app_preferences': 'تفضيلات التطبيق',
@@ -138,6 +177,25 @@ class AppTranslations extends Translations {
           'sensor_source': 'البيانات قادمة من مستشعر BGT-SMPS',
           'no_data': 'لم يتم تسجيل بيانات في السجل',
           'humidity_analysis': 'تحليل الرطوبة (%)',
+
+          // --- Alerts System ---
+          'alerts_system': 'نظام التنبيهات',
+          'warning': 'تحذير',
+          'resolved': 'تم حلها',
+          'preferences': 'التفضيلات',
+          'push_notifications': 'إشعارات الدفع',
+          'real_time_alerts_desc': 'تلقي تنبيهات فورية في حالة حدوث مشكلة.',
+          'latest_alerts': 'أحدث التنبيهات',
+          'Notifications': 'الإشعارات',
+          'Activées pour le topic \'alerts\'': 'تم التفعيل لموضوع التنبيهات',
+          'Désactivées': 'تم إيقاف التفعيل',
+
+          // --- Alert Messages (Exemples) ---
+          'crit_hydric_stress': 'إجهاد مائي حرج',
+          'zone_north_low_hum': 'المنطقة الشمالية: رطوبة منخفضة جداً',
+          'Alerte': 'تنبيه',
+
+          
         },
         'fr': {
           // Auth
@@ -156,6 +214,10 @@ class AppTranslations extends Translations {
           'confirm_password': 'Confirmer le mot de passe',
           'register_btn': "S'inscrire",
           'already_have_account': 'Déjà un compte ?',
+          'enter_your_mail': 'Entrez votre email',
+          'reset_password_btn': 'RÉINITIALISER LE MOT DE PASSE',
+          'back_to_login': 'Retour à la connexion',
+          'reset_title': 'Réinitialisez votre mot de passe',
 
           // Hints & Messages
           'email_hint': 'votre_nom@exemple.com',
@@ -174,13 +236,30 @@ class AppTranslations extends Translations {
           'user_not_found': "Ce compte n'existe pas",
           'loading': 'Chargement...',
 
+          // --- Firestore & Backend Keys ---
+          'commands': 'commands',
+          'variateur': 'variateur',
+          'isOn': 'isOn',
+          '📡 Sync Firestore : Pompe = ': '📡 Sync Firestore : Pompe = ',
+          'zones': 'zones',
+          'name': 'name',
+          'enabled': 'enabled',
+          'humidity': 'humidity',
+
+
           // Navigation & Dashboard
           'dashboard': 'Tableau de bord',
-          'zones': 'Zones',
           'alerts': 'Alertes',
           'profile': 'Profil',
           'soil': 'Humidité du sol',
           'temperature': 'Température',
+          'Humidité du sol': 'Humidité du sol',
+          'pH du sol': 'pH du sol',
+          'ON': 'ON',
+          'OFF': 'OFF',
+          'dd MMMM yyyy': 'dd MMMM yyyy',
+          'HH:mm': 'HH:mm',
+          'État de la pompe': 'État de la pompe',
           'pump': 'Pompe',
           'battery': 'Batterie',
           'general_status': 'STATUT GÉNÉRAL',
@@ -191,6 +270,12 @@ class AppTranslations extends Translations {
           'thresholds': 'Seuils',
           'ph_soil': 'pH du sol',
           'pump_status': 'État de la pompe',
+
+          // --- Zones Page ---
+          'zones_management': 'Gestion des Zones',
+          'Zone Inconnue': 'Zone Inconnue',
+          'running': 'En marche',
+          'stopped': 'Arrêtée',
 
           // Thresholds Page
           'irrigation_thresholds': 'Seuils d\'irrigation',
@@ -218,6 +303,25 @@ class AppTranslations extends Translations {
           'open_history': 'Ouvrir l\'historique réel',
           'irrigation_recommended': '🚨 Sol sec : Irrigation recommandée.',
           'stable_state': '✅ État stable.',
+          'zone': 'Zone', 
+
+          // --- Alerts System ---
+          'alerts_system': 'Système d\'Alertes',
+          'warning': 'Attention',
+          'resolved': 'Résolu',
+          'preferences': 'Préférences',
+          'push_notifications': 'Notifications Push',
+          'real_time_alerts_desc': 'Recevoir des alertes instantanées en cas de problème.',
+          'latest_alerts': 'Dernières Alertes',
+          'Notifications': 'Notifications',
+          'Activées pour le topic \'alerts\'': 'Activées pour le topic \'alerts\'',
+          'Désactivées': 'Désactivées',
+
+          // --- Alert Messages ---
+          'crit_hydric_stress': 'Stress Hydrique Critique',
+          'zone_north_low_hum': 'Zone Nord : Humidité trop faible',
+          'Alerte': 'Alerte',
+  
 
           // History
           'history_management': 'Gestion de l\'historique',
@@ -226,21 +330,27 @@ class AppTranslations extends Translations {
           'no_data': 'Aucune donnée enregistrée dans l\'historique',
           'humidity_analysis': 'Analyse de l\'humidité (%)',
 
-          // Profile
-          'Abonnement actuel': 'Abonnement actuel',
-          'Achat de services additionnels': 'Achat de services',
-          'Facturation et historique': 'Facturation & Historique',
-          'Analyse de croissance': 'Analyse de croissance',
-          'Plan de fertilisation': 'Plan de fertilisation',
-          'Abonnement Annuel': 'Abonnement Annuel',
-          'Se déconnecter': 'Se déconnecter',
-          'Galerie': 'Galerie',
-          'Appareil Photo': 'Appareil Photo',
-          'Votre demande pour': 'Votre demande pour',
-          'est en cours': 'est en cours',
-          'Facture': 'Facture',
-          'téléchargée': 'téléchargée',
-
+          // Profile Page
+          'profil': 'Profil',
+          'current_subscription': 'Abonnement actuel',
+          'purchase_services': 'Achat de services additionnels',
+          'billing_history': 'Facturation et historique',
+          'plan': 'Plan',
+          'Premium': 'Premium',
+          'growth_analysis': 'Analyse de croissance',
+          'fertilization_plan': 'Plan de fertilisation',
+          'annual_subscription': 'Abonnement Annuel',
+          'logout': 'Se déconnecter',
+          'gallery': 'Galerie',
+          'camera': 'Appareil Photo',
+          'request_for': 'Votre demande pour',
+          'is_processing': 'est en cours',
+          'invoice': 'Facture',
+          'downloaded': 'téléchargée',
+          'date': 'Date',
+          'service': 'Service',
+          'price': 'Prix',
+          'farmer': 'Agriculteur',
           // Parametres
           'app_preferences': 'Préférences App',
           'units_measure': 'Unités de mesure',
@@ -257,6 +367,32 @@ class AppTranslations extends Translations {
           'satellite_imagery': 'Imagerie Satellite',
           'satellite_imagery_desc': 'Les couleurs sombres indiquent une forte vigueur.',
           'understood': 'J\'AI COMPRIS',
+
+          // --- Variateur & Pompe ---
+          'vfd_control': 'Contrôle Variateur (VFD)',
+          'pump_current_state': 'État actuel de la pompe',
+          'actuator': 'Actionneur',
+          'stop_pump': 'ARRÊTER LA POMPE',
+          'start_pump': 'DÉMARRER LA POMPE',
+          'freq_config': 'Configuration de Fréquence',
+          'low_flow': 'Éco (Bas débit)',
+          'normal_flow': 'Normal',
+          'boost_flow': 'Boost (Max)',
+          // --- UI Misc ---
+         
+          'unknown_id': 'ID inconnu',
+          'unknown_user': 'Utilisateur inconnu',
+          'system': 'Système',
+
+          'ph': 'Niveau de pH',
+          'ph_optimal': 'Le pH est idéal pour la culture',
+          'ph_anormal': 'pH instable : Vérifiez le sol',
+          'sol_trop_acide': 'Sol trop acide (pH Bas)',
+          'sol_trop_alcalin': 'Sol trop alcalin (pH Haut)',
+          
+          'irrigation_req': 'Irrigation recommandée',
+          'alerte_maladie': 'Risque de maladie détecté',
+                  
         },
         'en': {
           // Auth
@@ -275,6 +411,10 @@ class AppTranslations extends Translations {
           'confirm_password': 'Confirm Password',
           'register_btn': 'Register',
           'already_have_account': 'Already have an account?',
+          'reset_password_btn': 'Reset Password', 
+          'enter_your_mail': 'Enter your email',
+          'back_to_login': 'Back to Login',
+          'reset_title': 'Reset Your Password',
 
           // Hints & Messages
           'email_hint': 'your_name@example.com',
@@ -293,9 +433,18 @@ class AppTranslations extends Translations {
           'user_not_found': 'User not found',
           'loading': 'Loading...',
 
+          // --- Firestore & Backend Keys ---
+          'commands': 'commands',
+          'variateur': 'variateur',
+          'isOn': 'isOn',
+          '📡 Sync Firestore : Pompe = ': '📡 Sync Firestore : Pump = ',
+          'name': 'name',
+          'enabled': 'enabled',
+          'humidity': 'humidity',
+          'zones': 'zones',
+
           // Navigation & Dashboard
           'dashboard': 'Dashboard',
-          'zones': 'Zones',
           'alerts': 'Alerts',
           'profile': 'Profile',
           'soil': 'Soil Humidity',
@@ -308,6 +457,13 @@ class AppTranslations extends Translations {
           'history': 'History',
           'map': 'Map',
           'thresholds': 'Thresholds',
+          'Humidité du sol': 'Soil Moisture',
+          'pH du sol': 'Soil pH',
+          'État de la pompe': 'Pump Status',
+          'ON': 'ON',
+          'OFF': 'OFF',
+          'dd MMMM yyyy': 'MMMM dd, yyyy',
+          'HH:mm': 'hh:mm a',
           'ph_soil': 'Soil pH',
           'pump_status': 'Pump Status',
 
@@ -324,7 +480,8 @@ class AppTranslations extends Translations {
           'open_history': 'Open Real History',
           'irrigation_recommended': '🚨 Dry soil: Irrigation recommended.',
           'stable_state': '✅ Stable state.',
-
+          'zone': 'منطقة',
+     
           // History
           'history_management': 'History Management',
           'humidity_24h': 'Humidity over the last 24h',
@@ -345,14 +502,17 @@ class AppTranslations extends Translations {
           'config_updated': 'Configuration updated',
           'pump_logic_desc': 'The pump will now follow these new thresholds.',
 
-          // Zones
-          'zones_management': 'Zones Management',
+          // --- Zones Page ---
+          'zones_management': 'إدارة مناطق الري',
+          'Zone Inconnue': 'منطقة مجهولة',
+          'running': 'قيد التشغيل',
+          'stopped': 'متوقفة',
+          
 
           // Variateur
           'vfd_control': 'VFD Control',
           'pump_current_state': 'Current pump status',
-          'running': 'Running',
-          'stopped': 'Stopped',
+          
           'target_speed': 'Target speed',
           'actuator': 'Actuator',
           'stop_pump': 'STOP PUMP',
@@ -362,16 +522,59 @@ class AppTranslations extends Translations {
           'normal_flow': 'Normal',
           'boost_flow': 'Boost',
 
-          // Profile
-          'Abonnement actuel': 'Current Subscription',
-          'Achat de services additionnels': 'Purchase Services',
-          'Facturation et historique': 'Billing & History',
-          'Analyse de croissance': 'Growth Analysis',
-          'Plan de fertilisation': 'Fertilization Plan',
-          'Abonnement Annuel': 'Annual Subscription',
-          'Se déconnecter': 'Logout',
-          'Galerie': 'Gallery',
-          'Appareil Photo': 'Camera',
+          // --- UI Misc ---
+        
+          'unknown_id': 'Unknown ID',
+          'unknown_user': 'Unknown User',
+          'system': 'System',
+
+          'ph': 'pH Level',
+          'ph_optimal': 'pH is ideal for the crop',
+          'ph_anormal': 'Unstable pH: Check the soil',
+          'sol_trop_acide': 'Soil too acidic (Low pH)',
+          'sol_trop_alcalin': 'Soil too alkaline (High pH)',
+          'irrigation_req': 'Irrigation recommended',
+          'alerte_maladie': 'Disease risk detected',
+          
+
+         // Profile Page
+          'profil': 'Profile',
+          'current_subscription': 'Current Subscription',
+          'purchase_services': 'Purchase Services',
+          'billing_history': 'Billing & History',
+          'plan': 'Plan',
+          'Premium': 'Premium',
+          'growth_analysis': 'Growth Analysis',
+          'fertilization_plan': 'Fertilization Plan',
+          'annual_subscription': 'Annual Subscription',
+          'logout': 'Logout',
+          'gallery': 'Gallery',
+          'camera': 'Camera',
+          'request_for': 'Your request for',
+          'is_processing': 'is processing',
+          'invoice': 'Invoice',
+          'downloaded': 'downloaded',
+          'date': 'Date',
+          'service': 'Service',
+          'price': 'Price',
+          'farmer': 'Farmer',
+
+          // --- Alerts System ---
+          'alerts_system': 'Alerts System',
+          'warning': 'Warning',
+          'resolved': 'Resolved',
+          'preferences': 'Preferences',
+          'push_notifications': 'Push Notifications',
+          'real_time_alerts_desc': 'Receive instant alerts in case of issues.',
+          'latest_alerts': 'Latest Alerts',
+          'Notifications': 'Notifications',
+          'Activées pour le topic \'alerts\'': 'Enabled for topic \'alerts\'',
+          'Désactivées': 'Disabled',
+
+          // --- Alert Messages ---
+          'crit_hydric_stress': 'Critical Water Stress',
+          'zone_north_low_hum': 'North Zone: Humidity too low',
+          'Alerte': 'Alert',
 
           // Parametres
           'app_preferences': 'App Preferences',

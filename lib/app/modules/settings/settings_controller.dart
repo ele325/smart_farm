@@ -11,7 +11,7 @@ class SettingsController extends GetxController {
   void changeLanguage(String langCode) {
     Locale locale = Locale(langCode);
     Get.updateLocale(locale);
-    _storage.write('language_code', langCode);
+    _storage.write('language_code'.tr, langCode);
     
     // Ferme le dialogue si ouvert
     if (Get.isDialogOpen == true) Get.back();
@@ -30,9 +30,9 @@ class SettingsController extends GetxController {
 
   Future<void> contactSupport() async {
     final Uri emailLaunchUri = Uri(
-      scheme: 'mailto',
-      path: 'support@smartfarm.tn',
-      queryParameters: {'subject': 'Support SmartFarm PFE'},
+      scheme: 'mailto'.tr,
+      path: 'support@smartfarm.tn'.tr,
+      queryParameters: {'subject': 'Support SmartFarm PFE'.tr}
     );
     if (await canLaunchUrl(emailLaunchUri)) {
       await launchUrl(emailLaunchUri);

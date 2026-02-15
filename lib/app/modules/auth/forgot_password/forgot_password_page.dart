@@ -2,76 +2,167 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../widgets/app_button.dart';
-import 'forgot_password_controller.dart'; 
+import 'forgot_password_controller.dart';
 
 class ForgotPasswordPage extends StatelessWidget {
   ForgotPasswordPage({super.key});
 
-  final controller = Get.put(ForgotPasswordController());
+  final ForgotPasswordController controller = Get.put(
+    ForgotPasswordController(),
+  );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text('reset_title'.tr, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-        backgroundColor: AppColors.primary,
-        elevation: 0,
-        // La flèche de retour automatique dans l'AppBar
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
+      // ✅ On enlève l'appBar ici pour utiliser un Container personnalisé dans le body
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              Text('forgot_password'.tr, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.primary)),
-              const SizedBox(height: 10),
-              Text('enter_your_mail'.tr, style: const TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 40),
-
-              _buildLabel('email'.tr),
-              const SizedBox(height: 8),
-              _buildInputField(controller.emailController, 'email_hint'.tr, Icons.email_outlined),
-              const SizedBox(height: 30),
-              
-              // Bouton de réinitialisation
-              Obx(() => AppButton(
-                title: "reset_password_btn".tr.toUpperCase(),
-                isLoading: controller.isLoading.value,
-                onTap: () => controller.resetPassword(), 
-              )),
-
-              const SizedBox(height: 25),
-
-              // --- BOUTON RETOUR AJOUTÉ ICI ---
-              Center(
-                child: TextButton(
-                  onPressed: () => Get.back(), // Retourne à la page précédente (Login)
-                  child: Text(
-                    'back_to_login'.tr, 
-                    style: const TextStyle(
-                      color: AppColors.primary, 
-                      fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.underline
+        child: Column(
+          children: [
+            // ✅ BANDEAU VERT (Identique à SignupPage)
+            Container(
+              height: 200,
+              width: double.infinity,
+              color: AppColors.primary,
+              child: Stack(
+                // Utilisation de Stack pour placer le bouton retour
+                children: [
+                  // Bouton Retour
+                  Positioned(
+                    top: 40, // Ajustez selon la barre de statut
+                    left: 10,
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      onPressed: () => Get.back(),
                     ),
                   ),
-                ),
+                  // Logo et Texte
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Image.asset(
+                            'assets/images/robocare_logo.png',
+                            height: 70,
+                            width: 70,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(
+                                  Icons.eco,
+                                  color: AppColors.primary,
+                                  size: 50,
+                                ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        // Note: J'utilise 'forgot_password' ici pour le titre
+                        Text(
+                          'Smart Irrigation'.tr,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+
+            // FORMULAIRE
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+
+                  // Sous-titre informatif
+                  Text(
+                    'enter_your_mail'.tr,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  _buildLabel('email'.tr),
+                  _buildInputField(
+                    controller.emailController,
+                    'email_hint'.tr,
+                    Icons.email_outlined,
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  // BOUTON RÉINITIALISER
+                  Obx(
+                    () => AppButton(
+                      title: "reset_password_btn".tr.toUpperCase(),
+                      isLoading: controller.isLoading.value,
+                      onTap: () => controller.resetPassword(),
+                    ),
+                  ),
+
+                  const SizedBox(height: 25),
+
+                  // RETOUR CONNEXION
+                  Center(
+                    child: TextButton(
+                      onPressed: () => Get.back(),
+                      child: Text(
+                        'back_to_login'.tr,
+                        style: const TextStyle(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildLabel(String label) => Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black87));
+  // ---------- WIDGETS DE CONSTRUCTION (Identiques à SignupPage) ----------
+  Widget _buildLabel(String label) => Padding(
+    padding: const EdgeInsets.only(bottom: 8.0),
+    child: Text(
+      label,
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 16,
+        color: Colors.black87,
+      ),
+    ),
+  );
 
-  Widget _buildInputField(TextEditingController ctrl, String hint, IconData icon) {
+  Widget _buildInputField(
+    TextEditingController ctrl,
+    String hint,
+    IconData icon, {
+    TextInputType keyboardType = TextInputType.text,
+  }) {
     return TextField(
       controller: ctrl,
+      keyboardType: keyboardType,
       style: const TextStyle(fontWeight: FontWeight.bold),
       decoration: InputDecoration(
         hintText: hint,
@@ -79,7 +170,10 @@ class ForgotPasswordPage extends StatelessWidget {
         prefixIcon: Icon(icon),
         filled: true,
         fillColor: const Color(0xFFF5F5F5),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
       ),
     );
   }

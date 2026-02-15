@@ -7,16 +7,19 @@ class HistoryPage extends StatelessWidget {
   final String zoneName;
   final String zoneId;
 
+  // Utilisation de Get.find ou Get.put de manière sécurisée
   const HistoryPage({super.key, required this.zoneName, required this.zoneId});
 
   @override
   Widget build(BuildContext context) {
+    // On initialise le controller
     final controller = Get.put(HistoryController());
+    // On lance la recherche
     controller.fetchHistory(zoneId);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Historique - $zoneName"),
+        title: Text("${'history'.tr} - $zoneName"),
         backgroundColor: Colors.green[800],
         foregroundColor: Colors.white,
       ),
@@ -24,8 +27,9 @@ class HistoryPage extends StatelessWidget {
         padding: const EdgeInsets.all(20.0),
         child: Obx(() {
           if (controller.isLoading.value) return const Center(child: CircularProgressIndicator());
+          
           if (controller.historyRecords.isEmpty) {
-            return const Center(child: Text("Aucune donnée enregistrée dans l'historique"));
+            return Center(child: Text("no_data_history".tr));
           }
 
           return Column(
@@ -36,8 +40,11 @@ class HistoryPage extends StatelessWidget {
               Expanded(
                 child: LineChart(
                   LineChartData(
-                    gridData: FlGridData(show: true, drawVerticalLine: true, 
-                      getDrawingHorizontalLine: (value) => FlLine(color: Colors.grey[300], strokeWidth: 1)),
+                    gridData: FlGridData(
+                      show: true, 
+                      drawVerticalLine: true, 
+                      getDrawingHorizontalLine: (value) => FlLine(color: Colors.grey[300], strokeWidth: 1)
+                    ),
                     titlesData: const FlTitlesData(
                       rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                       topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),

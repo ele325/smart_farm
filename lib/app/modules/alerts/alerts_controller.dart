@@ -1,30 +1,61 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 
 class AlertsController extends GetxController {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  
   var isPushEnabled = true.obs;
-
-  // Liste réactive des alertes
-  var alerts = <Map<String, String>>[
-    {
-      'title': 'crit_hydric_stress'.tr,
-      'msg': 'zone_north_low_hum'.tr,
-      'level': 'critique',
-      'time': '10:45'
-    },
-  ].obs;
+  
+  // Liste réactive des alertes provenant de Firestore
+  var alerts = <Map<String, dynamic>>[].obs;
 
   @override
   void onInit() {
     super.onInit();
-    // Écoute les messages Firebase pendant que l'app est ouverte
+    _listenToFirestoreAlerts();
+    _setupPushNotifications();
+  }
+
+  // --- ÉCOUTE FIRESTORE (users/UID/alerts) ---
+  void _listenToFirestoreAlerts() {
+    String? uid = _auth.currentUser?.uid;
+    if (uid != null) {
+      _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('alerts')
+          .orderBy('timestamp', descending: true) // Les plus récentes en premier
+          .snapshots()
+          .listen((snapshot) {
+        alerts.value = snapshot.docs.map((doc) {
+          final data = doc.data();
+          return {
+            'title': data['title'] ?? 'Alerte',
+            'msg': data['message'] ?? '',
+            'level': data['level'] ?? 'warning',
+            'time': _formatTimestamp(data['timestamp']),
+          };
+        }).toList();
+      });
+    }
+  }
+
+  // --- CONFIGURATION PUSH NOTIFICATIONS ---
+  void _setupPushNotifications() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       if (message.notification != null) {
-        addAlert(
-          message.notification!.title ?? "Alerte",
-          message.notification!.body ?? "",
-          "critique", // On peut passer le niveau via les 'data' de Firebase
+        // Optionnel : On peut aussi ajouter l'alerte manuellement ici 
+        // si elle n'est pas encore enregistrée dans Firestore
+        Get.snackbar(
+          message.notification!.title!,
+          message.notification!.body!,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
         );
       }
     });
@@ -32,25 +63,21 @@ class AlertsController extends GetxController {
 
   void toggleNotifications(bool value) async {
     isPushEnabled.value = value;
-    if (value) {
-      // Abonne l'utilisateur au topic pour recevoir les alertes groupées
-      await FirebaseMessaging.instance.subscribeToTopic("alerts");
-      Get.snackbar("Notifications", "Activées pour le topic 'alerts'");
-    } else {
-      await FirebaseMessaging.instance.unsubscribeFromTopic("alerts");
-      Get.snackbar("Notifications", "Désactivées");
+    String? uid = _auth.currentUser?.uid;
+    
+    if (value && uid != null) {
+      // S'abonner à un topic spécifique à l'utilisateur pour la sécurité
+      await FirebaseMessaging.instance.subscribeToTopic("user_$uid");
+      Get.snackbar("Notifications".tr, "Activées".tr);
+    } else if (uid != null) {
+      await FirebaseMessaging.instance.unsubscribeFromTopic("user_$uid");
+      Get.snackbar("Notifications".tr, "Désactivées".tr);
     }
   }
 
-  void addAlert(String title, String msg, String level) {
-    // Formatage de l'heure propre (HH:mm)
-    String formattedTime = "${DateTime.now().hour.toString().padLeft(2, '0')}:${DateTime.now().minute.toString().padLeft(2, '0')}";
-    
-    alerts.insert(0, {
-      'title': title,
-      'msg': msg,
-      'level': level,
-      'time': formattedTime
-    });
+  String _formatTimestamp(dynamic timestamp) {
+    if (timestamp == null) return "--:--";
+    DateTime date = (timestamp as Timestamp).toDate();
+    return "${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
   }
 }

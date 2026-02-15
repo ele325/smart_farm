@@ -95,7 +95,7 @@ class _VariateurPageState extends State<VariateurPage> {
 
   Widget _presetChip(double val, String label, bool isSwitched) {
     return ActionChip(
-      label: Text("$label ($val Hz)"),
+      label: Text("$label ($val Hz)".tr),
       onPressed: () => _controller.sendCommand(val, isSwitched),
       backgroundColor: Colors.white,
     );

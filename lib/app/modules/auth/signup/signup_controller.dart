@@ -23,80 +23,71 @@ class SignupController extends GetxController {
   void togglePassword() => isPasswordHidden.value = !isPasswordHidden.value;
   void toggleConfirm() => isConfirmHidden.value = !isConfirmHidden.value;
 
-  bool isPasswordValid(String password) {
-    if (password.length < 8) return false;
-    bool hasLetters = password.contains(RegExp(r'[a-zA-Z]'));
-    bool hasDigits = password.contains(RegExp(r'[0-9]'));
-    bool hasSpecial = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
-    return hasLetters && hasDigits && hasSpecial;
-  }
-
   Future<void> signup() async {
-    String name = nameController.text.trim();
-    String email = emailController.text.trim();
-    String cin = cinController.text.trim();
-    String pass = passwordController.text;
-    String confirmPass = confirmPasswordController.text;
-
-    // 1. Validations de base
-    if (name.isEmpty || email.isEmpty || cin.isEmpty || pass.isEmpty) {
-      Get.snackbar("erreur".tr, "veuillez_remplir_champs".tr,
-          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.redAccent, colorText: Colors.white);
-      return;
-    }
-
-    if (!isPasswordValid(pass)) {
-      Get.snackbar("erreur".tr, "password_too_weak".tr,
-          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.orange, colorText: Colors.white);
-      return;
-    }
-
-    if (pass != confirmPass) {
-      Get.snackbar("erreur".tr, "passwords_not_match".tr,
-          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.redAccent, colorText: Colors.white);
+    if (passwordController.text != confirmPasswordController.text) {
+      Get.snackbar("Erreur", "Les mots de passe ne correspondent pas", 
+          backgroundColor: Colors.redAccent, colorText: Colors.white);
       return;
     }
 
     try {
       isLoading.value = true;
-
-      // 2. Création de l'utilisateur dans Firebase Auth
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: pass,
-      );
+          email: emailController.text.trim(), password: passwordController.text);
 
-      // 3. Sauvegarde des données (Nom, CIN) dans Firestore
       if (userCredential.user != null) {
-        await _firestore.collection('users').doc(userCredential.user!.uid).set({
-          'uid': userCredential.user!.uid,
-          'fullName': name,
-          'email': email,
-          'cin': cin,
+        String uid = userCredential.user!.uid;
+        WriteBatch batch = _firestore.batch();
+
+        // 1. Infos de base de l'utilisateur
+        batch.set(_firestore.collection('users').doc(uid), {
+          'uid': uid,
+          'fullName': nameController.text.trim(),
+          'email': emailController.text.trim(),
+          'cin': cinController.text.trim(),
+          'role': 'user',
           'createdAt': FieldValue.serverTimestamp(),
         });
 
-        // 4. Marquer comme connecté localement
-        _storage.write('isLoggedIn', true);
-        _storage.write('user_email', email);
-        _storage.write('user_name', name);
+        // 2. Initialisation des Zones (On met l'humidité à 50 par défaut pour éviter l'alerte à 0)
+        for (int i = 1; i <= 8; i++) {
+          batch.set(_firestore.collection('users').doc(uid).collection('zones').doc('zone$i'), {
+            'name': 'Zone $i', 
+            'enabled': false, 
+            'humidity': 50.0, 
+            'azote': 0, 
+            'sante': 100, 
+            'lat': 34.7335, 
+            'lng': 10.7668,
+            'ph': 7.0, 
+            'temperature': 25.0,
+          });
+        }
 
-        Get.snackbar("success".tr, "account_created".tr,
-            snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.green, colorText: Colors.white);
+        // 3. Initialisation des seuils (ESSENTIEL pour ton nouveau Dashboard)
+        batch.set(_firestore.collection('users').doc(uid).collection('config').doc('thresholds'), {
+          'minHumidity': 30.0,
+          'maxHumidity': 70.0,
+          'duration': 15,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+
+        // 4. Commande Pompe
+        batch.set(_firestore.collection('users').doc(uid).collection('commands').doc('variateur'), {
+          'frequency': 0, 
+          'isOn': false, 
+          'lastUpdate': FieldValue.serverTimestamp(),
+        });
+
+        await batch.commit();
+
+        _storage.write('isLoggedIn', true);
+        _storage.write('user_name', nameController.text.trim());
         
-        // Aller vers le Dashboard
         Get.offAllNamed(Routes.dashboard);
       }
-    } on FirebaseAuthException catch (e) {
-      String msg = "Erreur d'inscription";
-      if (e.code == 'email-already-in-use') msg = "Cet email est déjà utilisé";
-      if (e.code == 'weak-password') msg = "Mot de passe trop faible";
-      
-      Get.snackbar("erreur".tr, msg, 
-          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.redAccent);
     } catch (e) {
-      Get.snackbar("erreur".tr, "Problème de connexion internet",
-          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.redAccent);
+      Get.snackbar("Erreur", e.toString(), backgroundColor: Colors.redAccent, colorText: Colors.white);
     } finally {
       isLoading.value = false;
     }

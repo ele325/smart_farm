@@ -9,6 +9,7 @@ class AlertsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Utilisation de Get.find si déjà injecté ou Get.put
     final controller = Get.put(AlertsController());
 
     return Scaffold(
@@ -24,18 +25,26 @@ class AlertsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // --- STATISTIQUES ---
-            Row(
+            Obx(() => Row(
               children: [
-                _buildStatItem("2", "critique".tr, Colors.red),
+                _buildStatItem(
+                  controller.alerts.where((a) => a['level'] == 'critique').length.toString(), 
+                  "critique".tr, Colors.red
+                ),
                 const SizedBox(width: 10),
-                _buildStatItem("5", "warning".tr, Colors.orange),
+                _buildStatItem(
+                  controller.alerts.where((a) => a['level'] == 'warning').length.toString(), 
+                  "warning".tr, Colors.orange
+                ),
                 const SizedBox(width: 10),
-                _buildStatItem("12", "resolved".tr, Colors.green),
+                _buildStatItem(
+                  controller.alerts.length.toString(), 
+                  "total".tr, Colors.blue
+                ),
               ],
-            ),
+            )),
             const SizedBox(height: 20),
 
-            // --- PRÉFÉRENCES ---
             SectionCard(
               title: "preferences".tr,
               child: Obx(() => SwitchListTile(
@@ -49,30 +58,36 @@ class AlertsPage extends StatelessWidget {
             ),
             
             const SizedBox(height: 25),
-
-            // --- LISTE DES ALERTES ---
-            Text(
-              "latest_alerts".tr,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+            Text("latest_alerts".tr, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             
-            Obx(() => ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: controller.alerts.length,
-              itemBuilder: (context, index) {
-                final alert = controller.alerts[index];
-                final isCritique = alert['level'] == 'critique';
-                
-                return InfoCard(
-                  title: alert['title']!,
-                  value: "${alert['msg']} (${alert['time']})",
-                  icon: isCritique ? Icons.report_problem : Icons.warning_amber_rounded,
-                  statusColor: isCritique ? Colors.red : Colors.orange,
+            // --- LISTE RÉACTIVE ---
+            Obx(() {
+              if (controller.alerts.isEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Text("no_alerts".tr, style: const TextStyle(color: Colors.grey)),
+                  ),
                 );
-              },
-            )),
+              }
+              return ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: controller.alerts.length,
+                itemBuilder: (context, index) {
+                  final alert = controller.alerts[index];
+                  final bool isCritique = alert['level'] == 'critique';        
+                  
+                  return InfoCard(
+                    title: alert['title']!,
+                    value: "${alert['msg']} (${alert['time']})",
+                    icon: isCritique ? Icons.report_problem : Icons.warning_amber_rounded,
+                    statusColor: isCritique ? Colors.red : Colors.orange,
+                  );
+                },
+              );
+            }),
           ],
         ),
       ),

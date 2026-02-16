@@ -6,16 +6,19 @@ import 'package:get_storage/get_storage.dart';
 import '../../../routes/routes.dart';
 
 class SignupController extends GetxController {
+  // Contrôleurs de saisie
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final cinController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
+  // Instances Firebase & Stockage
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final _storage = GetStorage();
 
+  // Variables d'état réactives
   var isPasswordHidden = true.obs;
   var isConfirmHidden = true.obs;
   var isLoading = false.obs;
@@ -24,23 +27,41 @@ class SignupController extends GetxController {
   void toggleConfirm() => isConfirmHidden.value = !isConfirmHidden.value;
 
   Future<void> signup() async {
+    // 1. Validation locale
     if (passwordController.text != confirmPasswordController.text) {
-      Get.snackbar("Erreur", "Les mots de passe ne correspondent pas", 
-          backgroundColor: Colors.redAccent, colorText: Colors.white);
+      Get.snackbar(
+        "Erreur", 
+        "Les mots de passe ne correspondent pas",
+        backgroundColor: Colors.redAccent, 
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    if (nameController.text.isEmpty || emailController.text.isEmpty) {
+      Get.snackbar("Erreur", "Veuillez remplir tous les champs");
       return;
     }
 
     try {
       isLoading.value = true;
+
+      // 2. Création du compte dans Firebase Auth
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-          email: emailController.text.trim(), password: passwordController.text);
+        email: emailController.text.trim(),
+        password: passwordController.text,
+      );
 
       if (userCredential.user != null) {
         String uid = userCredential.user!.uid;
+        
+        // Utilisation d'un Batch pour garantir que toutes les données sont créées ensemble
         WriteBatch batch = _firestore.batch();
 
-        // 1. Infos de base de l'utilisateur
-        batch.set(_firestore.collection('users').doc(uid), {
+        // 3. Document Profil Utilisateur
+        DocumentReference userDoc = _firestore.collection('users').doc(uid);
+        batch.set(userDoc, {
           'uid': uid,
           'fullName': nameController.text.trim(),
           'email': emailController.text.trim(),
@@ -49,45 +70,52 @@ class SignupController extends GetxController {
           'createdAt': FieldValue.serverTimestamp(),
         });
 
-        // 2. Initialisation des Zones (On met l'humidité à 50 par défaut pour éviter l'alerte à 0)
-        for (int i = 1; i <= 8; i++) {
-          batch.set(_firestore.collection('users').doc(uid).collection('zones').doc('zone$i'), {
-            'name': 'Zone $i', 
-            'enabled': false, 
-            'humidity': 50.0, 
-            'azote': 0, 
-            'sante': 100, 
-            'lat': 34.7335, 
-            'lng': 10.7668,
-            'ph': 7.0, 
-            'temperature': 25.0,
-          });
-        }
-
-        // 3. Initialisation des seuils (ESSENTIEL pour ton nouveau Dashboard)
-        batch.set(_firestore.collection('users').doc(uid).collection('config').doc('thresholds'), {
+        // 4. Document de Configuration (Seuils globaux)
+        // On ne crée pas de zones ici pour laisser l'utilisateur le faire dynamiquement
+        DocumentReference configDoc = userDoc.collection('config').doc('thresholds');
+        batch.set(configDoc, {
           'minHumidity': 30.0,
           'maxHumidity': 70.0,
-          'duration': 15,
+          'defaultDuration': 15,
           'updatedAt': FieldValue.serverTimestamp(),
         });
 
-        // 4. Commande Pompe
-        batch.set(_firestore.collection('users').doc(uid).collection('commands').doc('variateur'), {
-          'frequency': 0, 
-          'isOn': false, 
+        // 5. Document Commande Variateur/Pompe
+        DocumentReference commandDoc = userDoc.collection('commands').doc('variateur');
+        batch.set(commandDoc, {
+          'frequency': 0,
+          'isOn': false,
+          'mode': 'auto', // 'auto' ou 'manual'
           'lastUpdate': FieldValue.serverTimestamp(),
         });
 
+        // Exécution du Batch
         await batch.commit();
 
+        // 6. Sauvegarde locale et Navigation
         _storage.write('isLoggedIn', true);
         _storage.write('user_name', nameController.text.trim());
+        _storage.write('user_email', emailController.text.trim());
         
         Get.offAllNamed(Routes.dashboard);
+        
+        Get.snackbar(
+          "Succès", 
+          "Compte créé avec succès !",
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
       }
+    } on FirebaseAuthException catch (e) {
+      String message = "Une erreur est survenue";
+      if (e.code == 'email-already-in-use') message = "Cet email est déjà utilisé";
+      if (e.code == 'weak-password') message = "Le mot de passe est trop faible";
+      
+      Get.snackbar("Erreur d'inscription", message,
+          backgroundColor: Colors.redAccent, colorText: Colors.white);
     } catch (e) {
-      Get.snackbar("Erreur", e.toString(), backgroundColor: Colors.redAccent, colorText: Colors.white);
+      Get.snackbar("Erreur", "Erreur de connexion au serveur",
+          backgroundColor: Colors.redAccent, colorText: Colors.white);
     } finally {
       isLoading.value = false;
     }
@@ -95,6 +123,7 @@ class SignupController extends GetxController {
 
   @override
   void onClose() {
+    // Nettoyage de la mémoire
     nameController.dispose();
     emailController.dispose();
     cinController.dispose();

@@ -1,10 +1,10 @@
 import 'package:get/get.dart';
 
 class RootController extends GetxController {
-  // L'index actuel de la barre de navigation
+  // L'index réactif de l'onglet sélectionné
   var currentIndex = 0.obs;
 
-  // Fonction pour changer d'onglet
+  // Change l'index et met à jour l'interface
   void changePage(int index) {
     currentIndex.value = index;
   }

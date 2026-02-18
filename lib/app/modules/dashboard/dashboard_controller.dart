@@ -47,7 +47,6 @@ class DashboardController extends GetxController {
 
   void initUserSync() {
     String? uid = _auth.currentUser?.uid;
-    if (uid == null) return;
 
     _zoneSubscription = _firestore
         .collection('users')

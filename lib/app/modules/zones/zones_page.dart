@@ -1,28 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'zones_controller.dart';
+import '../history/history_page.dart';
 
 class ZonesPage extends StatelessWidget {
   ZonesPage({super.key});
 
-  // Injection du contrôleur mis à jour avec NPK et EC
-  final ZonesController controller = Get.put(ZonesController());
+  // Utilisation de permanent: true pour éviter les erreurs "Controller not found"
+  final ZonesController controller = Get.put(
+    ZonesController(),
+    permanent: true,
+  );
 
   @override
   Widget build(BuildContext context) {
+    // Ajout du Scaffold avec AppBar comme dans le tableau de bord
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: Text('zones_management'.tr),
-        backgroundColor: Colors.green[800],
-        foregroundColor: Colors.white,
+        title: Text('zones'.tr),
         centerTitle: true,
+        backgroundColor: const Color(0xFF1B5E20),
+        foregroundColor: Colors.white,
         elevation: 0,
       ),
       body: Obx(() {
         if (controller.zones.isEmpty) {
-          return const Center(
-            child: CircularProgressIndicator(color: Colors.green),
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const CircularProgressIndicator(color: Color(0xFF1B5E20)),
+                const SizedBox(height: 12),
+                Text('loading'.tr, style: const TextStyle(color: Colors.grey)),
+              ],
+            ),
           );
         }
 
@@ -33,7 +45,8 @@ class ZonesPage extends StatelessWidget {
             crossAxisCount: 2,
             mainAxisSpacing: 12,
             crossAxisSpacing: 12,
-            childAspectRatio: 0.62, // Ajusté pour accueillir les badges NPK
+            childAspectRatio:
+                0.58, // Ajusté pour éviter les débordements (overflow)
           ),
           itemBuilder: (context, index) =>
               _construireCarteZone(controller.zones[index]),
@@ -42,10 +55,14 @@ class ZonesPage extends StatelessWidget {
     );
   }
 
-  Widget _construireCarteZone(Zone zone) {
+  Widget _construireCarteZone(dynamic zone) {
     return Obx(() {
-      // Alerte si humidité basse
       bool estEnAlerte = zone.humidity.value < 30;
+
+      // Gestion du nom de la zone avec traduction
+      String zoneName = zone.zoneNum.isNotEmpty
+          ? '${'zone_label'.tr} ${zone.zoneNum}'
+          : zone.name;
 
       return Card(
         elevation: estEnAlerte ? 8 : 2,
@@ -56,78 +73,155 @@ class ZonesPage extends StatelessWidget {
             width: 2,
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-          child: Column(
-            children: [
-              // --- ENTÊTE ---
-              Icon(
-                estEnAlerte ? Icons.warning_amber_rounded : Icons.eco,
-                color: estEnAlerte ? Colors.red : Colors.green,
-                size: 30,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                zone.name,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const Divider(),
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(8, 10, 8, 8),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // --- ICÔNE D'ÉTAT ---
+                    Icon(
+                      estEnAlerte ? Icons.warning_amber_rounded : Icons.eco,
+                      color: estEnAlerte ? Colors.red : Colors.green,
+                      size: 26,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      zoneName,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
 
-              // --- DONNÉES PHYSIQUES ---
-              _buildSensorRow(Icons.opacity, "${zone.humidity.value.toStringAsFixed(1)}%", Colors.blue),
-              _buildSensorRow(Icons.thermostat, "${zone.temperature.value.toStringAsFixed(1)}°C", Colors.orange),
-              _buildSensorRow(Icons.science, "pH: ${zone.ph.value.toStringAsFixed(1)}", Colors.teal),
-              _buildSensorRow(Icons.bolt, "EC: ${zone.ec.value.toInt()}", Colors.purple),
+                    // Badge d'alerte humidité
+                    if (estEnAlerte)
+                      Container(
+                        margin: const EdgeInsets.only(top: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 1,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          'low_humidity_alert'.tr,
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 8,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
 
-              const SizedBox(height: 8),
+                    const Divider(height: 8),
 
-              // --- BADGES NPK (Nutriments) ---
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _npkBadge("N", zone.azote.value, Colors.redAccent),
-                  _npkBadge("P", zone.phosphore.value, Colors.orangeAccent),
-                  _npkBadge("K", zone.potassium.value, Colors.blueAccent),
-                ],
-              ),
+                    // --- DONNÉES CAPTEURS ---
+                    _buildSensorRow(
+                      Icons.opacity,
+                      '${'hum_short'.tr}: ${zone.humidity.value.toStringAsFixed(1)}%',
+                      Colors.blue,
+                    ),
+                    _buildSensorRow(
+                      Icons.thermostat,
+                      '${'temp_short'.tr}: ${zone.temperature.value.toStringAsFixed(1)}°C',
+                      Colors.orange,
+                    ),
+                    _buildSensorRow(
+                      Icons.science,
+                      'pH: ${zone.ph.value.toStringAsFixed(1)}',
+                      Colors.teal,
+                    ),
+                    _buildSensorRow(
+                      Icons.bolt,
+                      'EC: ${zone.ec.value.toInt()}',
+                      Colors.purple,
+                    ),
 
-              const Spacer(),
+                    const SizedBox(height: 4),
 
-              // --- CONTRÔLE POMPE ---
-              Switch(
-                value: zone.enabled.value,
-                onChanged: (val) => controller.basculerPompe(zone, val),
-                activeColor: estEnAlerte ? Colors.red : Colors.blue,
-              ),
-              Text(
-                zone.enabled.value ? 'running'.tr : 'stopped'.tr,
-                style: TextStyle(
-                  color: zone.enabled.value ? Colors.blue : Colors.grey,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
+                    // --- BADGES NPK ---
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _npkBadge("N", zone.azote.value, Colors.redAccent),
+                        _npkBadge(
+                          "P",
+                          zone.phosphore.value,
+                          Colors.orangeAccent,
+                        ),
+                        _npkBadge("K", zone.potassium.value, Colors.blueAccent),
+                      ],
+                    ),
+
+                    const Spacer(),
+
+                    // --- BOUTON POMPE ---
+                    Transform.scale(
+                      scale: 0.8,
+                      child: Switch(
+                        value: zone.enabled.value,
+                        onChanged: (val) => controller.basculerPompe(zone, val),
+                        activeThumbColor: estEnAlerte
+                            ? Colors.red
+                            : Colors.blue,
+                      ),
+                    ),
+                    Text(
+                      zone.enabled.value ? 'running'.tr : 'stopped'.tr,
+                      style: TextStyle(
+                        color: zone.enabled.value ? Colors.blue : Colors.grey,
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+
+            // --- BOUTON HISTORIQUE (Top Right) ---
+            Positioned(
+              top: 2,
+              right: 2,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.bar_chart,
+                  color: Colors.blueGrey,
+                  size: 18,
+                ),
+                onPressed: () => Get.to(
+                  () => HistoryPage(zoneName: zoneName, zoneId: zone.id),
+                ),
+              ),
+            ),
+          ],
         ),
       );
     });
   }
 
-  // Ligne de capteur standard
   Widget _buildSensorRow(IconData icon, String text, Color color) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
+      padding: const EdgeInsets.symmetric(vertical: 1),
       child: Row(
         children: [
-          Icon(icon, size: 14, color: color),
-          const SizedBox(width: 6),
+          Icon(icon, size: 12, color: color),
+          const SizedBox(width: 4),
           Expanded(
             child: Text(
               text,
-              style: TextStyle(fontSize: 11, color: color, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontSize: 10,
+                color: color,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -135,28 +229,29 @@ class ZonesPage extends StatelessWidget {
     );
   }
 
-  // Petit badge circulaire pour N, P et K
   Widget _npkBadge(String label, double value, Color color) {
     return Column(
       children: [
         Container(
-          width: 24,
-          height: 24,
+          width: 20,
+          height: 20,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             shape: BoxShape.circle,
-            border: Border.all(color: color.withOpacity(0.5), width: 1),
           ),
           child: Text(
             label,
-            style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12),
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.bold,
+              fontSize: 10,
+            ),
           ),
         ),
-        const SizedBox(height: 2),
         Text(
           "${value.toInt()}",
-          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
         ),
       ],
     );

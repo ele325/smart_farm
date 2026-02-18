@@ -8,14 +8,13 @@ import '../../routes/routes.dart';
 class ProfileController extends GetxController {
   final _storage = GetStorage();
   final _picker = ImagePicker();
-  
+
   var userName = ''.obs;
   var email = ''.obs;
-  var units = ''.obs;
-  var profileImagePath = ''.obs; 
-  var currentPlan = 'Premium'.obs;
-  
-  // Liste des factures (les titres sont des clés de traduction)
+  var units = 'metric'.obs;        // ✅ stocker la clé brute, pas le texte traduit
+  var profileImagePath = ''.obs;
+  var currentPlan = 'premium'.obs; // ✅ clé brute
+
   var billingHistory = [
     {'id': 'INV-001', 'date': '15/01/2026', 'service': 'annuel_sub', 'prix': '250 DT'},
     {'id': 'INV-002', 'date': '20/01/2026', 'service': 'growth_analysis', 'prix': '50 DT'},
@@ -24,17 +23,15 @@ class ProfileController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Utilisation de clés fixes pour la persistance des données
-    userName.value = _storage.read('user_name') ?? 'Agriculteur'.tr;
+    userName.value = _storage.read('user_name') ?? 'Agriculteur';
     email.value = _storage.read('user_email') ?? 'contact@robocare.tn';
-    units.value = _storage.read('user_units') ?? 'metric'.tr;
+    units.value = _storage.read('user_units') ?? 'metric'; // ✅ clé brute
     profileImagePath.value = _storage.read('profile_pic') ?? '';
+    currentPlan.value = _storage.read('user_plan') ?? 'premium';
   }
 
-  // Changement de langue dynamique
   void changeLanguage(String langCode) {
-    var locale = Locale(langCode);
-    Get.updateLocale(locale);
+    Get.updateLocale(Locale(langCode));
     _storage.write('language_code', langCode);
   }
 
@@ -50,24 +47,50 @@ class ProfileController extends GetxController {
       Get.snackbar("erreur".tr, "access_denied".tr, backgroundColor: Colors.redAccent);
     }
   }
+  // ✅ Ajouter cette méthode dans ProfileController
+void deletePhoto() {
+  profileImagePath.value = '';
+  _storage.remove('profile_pic');
+  if (Get.isBottomSheetOpen!) Get.back();
+  Get.snackbar(
+    "success".tr,
+    "photo_deleted".tr,
+    snackPosition: SnackPosition.BOTTOM,
+    backgroundColor: Colors.green,
+    colorText: Colors.white,
+    icon: const Icon(Icons.check_circle, color: Colors.white),
+  );
+}
 
   void buyService(String serviceKey) {
-    Get.snackbar("success".tr, "${"request_for".tr} '${serviceKey.tr}' ${"is_pending".tr}.",
-      snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.green, colorText: Colors.white);
+    // ✅ serviceKey est la clé brute → on traduit ici
+    Get.snackbar(
+      "success".tr,
+      "${"request_for".tr} '${serviceKey.tr}' ${"is_pending".tr}.",
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.green,
+      colorText: Colors.white,
+    );
   }
 
   void downloadInvoice(String invoiceId) {
-    Get.snackbar("loading".tr, "${"invoice".tr} $invoiceId ${"downloaded".tr}.",
-      snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.blue, colorText: Colors.white);
+    Get.snackbar(
+      "loading".tr,
+      "${"invoice".tr} $invoiceId ${"downloaded".tr}.",
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.blue,
+      colorText: Colors.white,
+    );
   }
 
-  Future<void> makePhoneCall() async => await launchUrl(Uri.parse('tel:+21653140011')); 
-  Future<void> contactEmail() async => await launchUrl(Uri(scheme: 'mailto', path: 'contact@robocare.tn'));
+ void toggleUnits() {
+  units.value = (units.value == 'metric') ? 'imperial' : 'metric';
+  _storage.write('user_units', units.value);
+}
 
-  void toggleUnits() {
-    units.value = (units.value == 'metric'.tr) ? 'imperial'.tr : 'metric'.tr;
-    _storage.write('user_units', units.value);
-  }
+  Future<void> makePhoneCall() async => await launchUrl(Uri.parse('tel:+21653140011'));
+  Future<void> contactEmail() async =>
+      await launchUrl(Uri(scheme: 'mailto', path: 'contact@robocare.tn'));
 
   void logout() {
     _storage.write('isLoggedIn', false);

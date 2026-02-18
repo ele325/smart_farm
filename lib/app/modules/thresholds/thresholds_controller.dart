@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
@@ -20,27 +21,24 @@ class ThresholdsController extends GetxController {
 
   void _listenToSettings() {
     String? uid = _auth.currentUser?.uid;
-    if (uid != null) {
-      _firestore
-          .collection('users')
-          .doc(uid)
-          .collection('config')
-          .doc('thresholds')
-          .snapshots()
-          .listen((snapshot) {
-        if (snapshot.exists) {
-          Map<String, dynamic> data = snapshot.data()!;
-          minHumidity.value = (data['minHumidity'] ?? 30.0).toDouble();
-          maxHumidity.value = (data['maxHumidity'] ?? 70.0).toDouble();
-          duration.value = (data['duration'] ?? 15).toInt();
-        }
-      });
-    }
+    _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('config')
+        .doc('thresholds')
+        .snapshots()
+        .listen((snapshot) {
+          if (snapshot.exists) {
+            Map<String, dynamic> data = snapshot.data()!;
+            minHumidity.value = (data['minHumidity'] ?? 30.0).toDouble();
+            maxHumidity.value = (data['maxHumidity'] ?? 70.0).toDouble();
+            duration.value = (data['duration'] ?? 15).toInt();
+          }
+        });
   }
 
   Future<bool> saveSettings() async {
     String? uid = _auth.currentUser?.uid;
-    if (uid == null) return false;
 
     try {
       isLoading.value = true;
@@ -50,14 +48,14 @@ class ThresholdsController extends GetxController {
           .collection('config')
           .doc('thresholds')
           .set({
-        'minHumidity': minHumidity.value,
-        'maxHumidity': maxHumidity.value,
-        'duration': duration.value,
-        'updatedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
+            'minHumidity': minHumidity.value,
+            'maxHumidity': maxHumidity.value,
+            'duration': duration.value,
+            'updatedAt': FieldValue.serverTimestamp(),
+          }, SetOptions(merge: true));
       return true;
     } catch (e) {
-      print("Erreur Firebase: $e");
+      debugPrint("Erreur Firebase: $e");
       return false;
     } finally {
       isLoading.value = false;

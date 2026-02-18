@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'root_controller.dart'; // Import du nouveau contrôleur
+import 'root_controller.dart';
 import '../dashboard/dashboard_page.dart';
 import '../zones/zones_page.dart';
 import '../alerts/alerts_page.dart';
 import '../profile/profile_page.dart';
+import '../../widgets/bottom_nav.dart';
 
 class RootPage extends StatelessWidget {
   RootPage({super.key});
 
-  // On injecte le RootController ici
   final controller = Get.put(RootController());
 
   @override
   Widget build(BuildContext context) {
     return Obx(
-      () => PopScope( // Note: WillPopScope est déprécié, on utilise PopScope
+      () => PopScope(
         canPop: controller.currentIndex.value == 0,
-        onPopInvoked: (didPop) {
+        onPopInvokedWithResult: (didPop, result) {
           if (didPop) return;
           if (controller.currentIndex.value != 0) {
             controller.currentIndex.value = 0;
@@ -33,17 +33,7 @@ class RootPage extends StatelessWidget {
               ProfilePage(),
             ],
           ),
-          // N'oublie pas de passer l'index au widget BottomNav
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: controller.currentIndex.value,
-            onTap: controller.changePage,
-            items: [
-              BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Tableau de bord'),
-              BottomNavigationBarItem(icon: Icon(Icons.water_drop), label: 'Zones'),
-              BottomNavigationBarItem(icon: Icon(Icons.warning), label: 'Alertes'),
-              BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
-            ],
-          ),
+          bottomNavigationBar: const CustomBottomNav(), // ✅ widget dédié
         ),
       ),
     );

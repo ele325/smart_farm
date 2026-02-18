@@ -7,10 +7,8 @@ import 'package:flutter/material.dart';
 class AlertsController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
   var isPushEnabled = true.obs;
-  
-  // Liste réactive des alertes provenant de Firestore
   var alerts = <Map<String, dynamic>>[].obs;
 
   @override
@@ -20,42 +18,74 @@ class AlertsController extends GetxController {
     _setupPushNotifications();
   }
 
-  // --- ÉCOUTE FIRESTORE (users/UID/alerts) ---
   void _listenToFirestoreAlerts() {
     String? uid = _auth.currentUser?.uid;
-    if (uid != null) {
-      _firestore
-          .collection('users')
-          .doc(uid)
-          .collection('alerts')
-          .orderBy('timestamp', descending: true) // Les plus récentes en premier
-          .snapshots()
-          .listen((snapshot) {
-        alerts.value = snapshot.docs.map((doc) {
-          final data = doc.data();
-          return {
-            'title': data['title'] ?? 'Alerte',
-            'msg': data['message'] ?? '',
-            'level': data['level'] ?? 'warning',
-            'time': _formatTimestamp(data['timestamp']),
-          };
-        }).toList();
-      });
+
+    _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('alerts')
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .listen((snapshot) {
+      alerts.value = snapshot.docs.map((doc) {
+        final data = doc.data();
+
+        // ✅ Reconstruction du titre et message traduits côté Flutter
+        final String zoneNum  = data['zone_num']  ?? '?';
+        final double humidity = (data['humidity'] ?? 0.0).toDouble();
+        final String type     = data['type']      ?? 'unknown';
+        final String level    = data['level']     ?? 'warning';
+
+        return {
+          'title': _buildTitle(type, zoneNum),   // ✅ traduit
+          'msg':   _buildMessage(type, humidity), // ✅ traduit
+          'level': level,
+          'time':  _formatTimestamp(data['timestamp']),
+        };
+      }).toList();
+    });
+  }
+
+  // ✅ Titre traduit selon le type et la zone
+  String _buildTitle(String type, String zoneNum) {
+    switch (type) {
+      case 'low_humidity':
+        return '${'alert_zone'.tr} $zoneNum 🚨';
+      case 'high_humidity':
+        return '${'alert_zone'.tr} $zoneNum 💧';
+      case 'ph_alert':
+        return '${'alert_zone'.tr} $zoneNum ⚗️';
+      default:
+        return '${'alert_zone'.tr} $zoneNum';
     }
   }
 
-  // --- CONFIGURATION PUSH NOTIFICATIONS ---
+  // ✅ Message traduit avec la valeur injectée
+  String _buildMessage(String type, double humidity) {
+    switch (type) {
+      case 'low_humidity':
+        // "Humidité critique : 17.4%. Activation de la pompe."
+        return '${'alert_critical_humidity'.tr} ${humidity.toStringAsFixed(1)}%. ${'alert_pump_activated'.tr}';
+      case 'high_humidity':
+        return '${'alert_high_humidity'.tr} ${humidity.toStringAsFixed(1)}%. ${'alert_pump_stopped'.tr}';
+      case 'ph_alert':
+        return 'alert_ph_abnormal'.tr;
+      default:
+        return 'alert_unknown'.tr;
+    }
+  }
+
   void _setupPushNotifications() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       if (message.notification != null) {
-        // Optionnel : On peut aussi ajouter l'alerte manuellement ici 
-        // si elle n'est pas encore enregistrée dans Firestore
         Get.snackbar(
-          message.notification!.title!,
-          message.notification!.body!,
+          message.notification!.title ?? 'alert'.tr,
+          message.notification!.body  ?? '',
           snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.redAccent,
           colorText: Colors.white,
+          icon: const Icon(Icons.warning_amber_rounded, color: Colors.white),
         );
       }
     });
@@ -64,14 +94,23 @@ class AlertsController extends GetxController {
   void toggleNotifications(bool value) async {
     isPushEnabled.value = value;
     String? uid = _auth.currentUser?.uid;
-    
-    if (value && uid != null) {
-      // S'abonner à un topic spécifique à l'utilisateur pour la sécurité
+
+    if (value) {
       await FirebaseMessaging.instance.subscribeToTopic("user_$uid");
-      Get.snackbar("Notifications".tr, "Activées".tr);
-    } else if (uid != null) {
+      Get.snackbar(
+        "notifications".tr,
+        "notif_enabled".tr,   // ✅ clé traduite
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } else {
       await FirebaseMessaging.instance.unsubscribeFromTopic("user_$uid");
-      Get.snackbar("Notifications".tr, "Désactivées".tr);
+      Get.snackbar(
+        "notifications".tr,
+        "notif_disabled".tr,  // ✅ clé traduite
+        backgroundColor: Colors.grey,
+        colorText: Colors.white,
+      );
     }
   }
 

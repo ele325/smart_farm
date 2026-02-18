@@ -30,20 +30,36 @@ class MapPage extends StatelessWidget {
           ),
 
           // 2. MÉTÉO (Haut)
-          Positioned(top: 50, left: 20, right: 20, child: _buildWeatherBar(controller)),
+          Positioned(
+            top: 50,
+            left: 20,
+            right: 20,
+            child: _buildWeatherBar(controller),
+          ),
 
           // 3. FILTRES (Bas Gauche) - Ajout du pH
           Positioned(
-            bottom: 30, left: 15,
+            bottom: 30,
+            left: 15,
             child: Column(
               children: [
-                _layerBtn(controller, 'stress_hydrique', Icons.water_drop, Colors.blue),
+                _layerBtn(
+                  controller,
+                  'stress_hydrique',
+                  Icons.water_drop,
+                  Colors.blue,
+                ),
                 const SizedBox(height: 10),
                 _layerBtn(controller, 'ph', Icons.science, Colors.teal),
                 const SizedBox(height: 10),
                 _layerBtn(controller, 'azote', Icons.eco, Colors.orange),
                 const SizedBox(height: 10),
-                _layerBtn(controller, 'maladies', Icons.bug_report, Colors.purple),
+                _layerBtn(
+                  controller,
+                  'maladies',
+                  Icons.bug_report,
+                  Colors.purple,
+                ),
               ],
             ),
           ),
@@ -52,7 +68,12 @@ class MapPage extends StatelessWidget {
     );
   }
 
-  Widget _layerBtn(MapPageController c, String layer, IconData icon, Color color) {
+  Widget _layerBtn(
+    MapPageController c,
+    String layer,
+    IconData icon,
+    Color color,
+  ) {
     return Obx(() {
       bool sel = c.selectedLayer.value == layer;
       return GestureDetector(
@@ -69,15 +90,26 @@ class MapPage extends StatelessWidget {
   Widget _buildWeatherBar(MapPageController c) {
     return Container(
       padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(color: Colors.white.withOpacity(0.9), borderRadius: BorderRadius.circular(15)),
-      child: Obx(() => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.network("https://openweathermap.org/img/wn/${c.weatherIconCode.value}@2x.png", width: 40),
-          const SizedBox(width: 10),
-          Text(c.weatherTemp.value, style: const TextStyle(fontWeight: FontWeight.bold)),
-        ],
-      )),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.9),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Obx(
+        () => Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.network(
+              "https://openweathermap.org/img/wn/${c.weatherIconCode.value}@2x.png",
+              width: 40,
+            ),
+            const SizedBox(width: 10),
+            Text(
+              c.weatherTemp.value,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

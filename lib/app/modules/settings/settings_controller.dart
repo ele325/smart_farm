@@ -9,35 +9,46 @@ class SettingsController extends GetxController {
   final profileCtrl = Get.find<ProfileController>();
 
   void changeLanguage(String langCode) {
-    Locale locale = Locale(langCode);
-    Get.updateLocale(locale);
-    _storage.write('language_code'.tr, langCode);
-    
-    // Ferme le dialogue si ouvert
+    Get.updateLocale(Locale(langCode));
+    _storage.write('language_code', langCode); // ✅ clé brute, pas .tr
+
     if (Get.isDialogOpen == true) Get.back();
-    
+
     Get.snackbar(
-      "language".tr, 
-      "settings_updated".tr, // Utilisation d'une clé existante
+      "language".tr,
+      "settings_updated".tr,
       snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.green.withOpacity(0.1),
+      backgroundColor: Colors.green,
+      colorText: Colors.white,
+      icon: const Icon(Icons.check_circle, color: Colors.white),
     );
   }
 
   void toggleUnits() {
-    profileCtrl.toggleUnits();
+    profileCtrl.toggleUnits(); // ✅ délégation au ProfileController
   }
 
-  Future<void> contactSupport() async {
-    final Uri emailLaunchUri = Uri(
-      scheme: 'mailto'.tr,
-      path: 'support@smartfarm.tn'.tr,
-      queryParameters: {'subject': 'Support SmartFarm PFE'.tr}
-    );
-    if (await canLaunchUrl(emailLaunchUri)) {
-      await launchUrl(emailLaunchUri);
+  Future<void> makePhoneCall() async {
+    final Uri uri = Uri.parse('tel:+21653140011');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
     } else {
-      Get.snackbar("erreur".tr, "google_error".tr); // Réutilisation des clés d'erreur
+      Get.snackbar("erreur".tr, "access_denied".tr,
+          backgroundColor: Colors.redAccent, colorText: Colors.white);
+    }
+  }
+
+  Future<void> contactEmail() async {
+    final Uri uri = Uri(
+      scheme: 'mailto',           // ✅ pas de .tr sur le scheme
+      path: 'contact@robocare.tn',
+      queryParameters: {'subject': 'Support RoboCare'},
+    );
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      Get.snackbar("erreur".tr, "google_error".tr,
+          backgroundColor: Colors.redAccent, colorText: Colors.white);
     }
   }
 }

@@ -186,6 +186,8 @@ class AppTranslations extends Translations {
       'notifications': 'الإشعارات',
       'notif_enabled': 'تم تفعيل الإشعارات',
       'notif_disabled': 'تم إيقاف الإشعارات',
+      'Humidité critique !': 'رطوبة حرجة !',
+      'IRRIGUER': 'ري الآن',
 
       
 
@@ -295,6 +297,7 @@ class AppTranslations extends Translations {
       'low_humidity_alert': '⚠ Humidité basse',
       'running': 'En marche',
       'stopped': 'Arrêtée',
+      'IRRIGUER': 'IRRIGUER',
 
       // --- VFD Control ---
       'vfd_control': 'Contrôle Variateur (VFD)',
@@ -316,6 +319,7 @@ class AppTranslations extends Translations {
       'imperial': 'Impérial (lb/ac)',
       'user_guide_title': 'Guide d\'utilisation RoboCare',
       'water_management': 'Gestion de l\'eau',
+      'Humidité critique !': 'Humidité critique !',
       'water_management_desc': 'Surveillance en temps réel de l\'humidité du sol et déclenchement automatique de l\'irrigation.',
       'ia_fertilization': 'Fertilisation IA',
       'ia_fertilization_desc': 'Recommandations personnalisées basées sur l\'analyse NPK de votre sol.',
@@ -474,6 +478,8 @@ class AppTranslations extends Translations {
       'critique': 'Critical',
       'warning': 'Warning',
       'total': 'Total',
+      'IRRIGUER': 'IRRIGATE NOW',
+      'Humidité critique !': 'Critical Humidity!',
       'preferences': 'Preferences',
       'push_notifications': 'Push Notifications',
       'real_time_alerts_desc': 'Receive real-time alerts',

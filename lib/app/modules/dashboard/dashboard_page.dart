@@ -178,7 +178,7 @@ class DashboardPage extends StatelessWidget {
             style: TextStyle(
               color: color,
               fontWeight: FontWeight.bold,
-              fontSize: 20, // ✅ 26 → 30
+              fontSize: 15, // ✅ 26 → 30
             ),
           ),
         ),

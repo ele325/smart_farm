@@ -29,14 +29,16 @@ class HistoryData {
 class HistoryController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  
   RxList<HistoryData> historyRecords = <HistoryData>[].obs;
   RxBool isLoading = true.obs;
   RxInt selectedPeriod = 24.obs;
 
   void fetchHistory(String zoneId, int hours) {
+    // 1. Sécurité : Vérifier l'ID de la zone et l'utilisateur
     String? uid = _auth.currentUser?.uid;
-    if (uid == null) {
-      print("❌ [HISTORY] Utilisateur non connecté");
+    if (uid == null || zoneId.isEmpty) {
+      print("❌ [HISTORY] Erreur : UID ou ZoneId vide.");
       isLoading.value = false;
       return;
     }
@@ -45,8 +47,7 @@ class HistoryController extends GetxController {
     selectedPeriod.value = hours;
     DateTime startTime = DateTime.now().subtract(Duration(hours: hours));
 
-    print("🔍 [HISTORY] Chargement historique pour zone: $zoneId, période: $hours h");
-    print("🔍 [HISTORY] Chemin: users/$uid/zones/$zoneId/history");
+    print("🔍 [HISTORY] Chargement : users/$uid/zones/$zoneId/history");
 
     _firestore
         .collection('users')
@@ -54,14 +55,15 @@ class HistoryController extends GetxController {
         .collection('zones')
         .doc(zoneId)
         .collection('history')
-        .where('time', isGreaterThan: Timestamp.fromDate(startTime))
-        .orderBy('time', descending: false)
+        // ✅ Correction : On filtre sur 'last_update' car 'time' n'existe pas dans vos docs
+        .where('last_update', isGreaterThan: Timestamp.fromDate(startTime))
+        .orderBy('last_update', descending: false)
         .snapshots()
         .listen((snapshot) {
-          print("📦 [HISTORY] Docs reçus: ${snapshot.docs.length}");
+          print("📦 [HISTORY] Documents reçus : ${snapshot.docs.length}");
 
           if (snapshot.docs.isEmpty) {
-            print("⚠️ [HISTORY] Aucune donnée dans la période sélectionnée");
+            print("⚠️ [HISTORY] Aucune donnée trouvée.");
             historyRecords.clear();
             isLoading.value = false;
             return;
@@ -71,8 +73,8 @@ class HistoryController extends GetxController {
 
           historyRecords.value = snapshot.docs.map((doc) {
             var data = doc.data();
-            print("📄 [HISTORY] Doc: ${doc.id} => $data");
 
+            // ✅ Conversion sécurisée des types
             double hum  = (data['humidity']    ?? 0.0).toDouble();
             double temp = (data['temperature'] ?? 0.0).toDouble();
             double phV  = (data['ph']          ?? 0.0).toDouble();
@@ -83,13 +85,14 @@ class HistoryController extends GetxController {
 
             DateTime date;
             try {
-              date = (data['time'] as Timestamp).toDate();
+              // ✅ Correction : Utilisation du bon nom de champ 'last_update'
+              date = (data['last_update'] as Timestamp).toDate();
             } catch (e) {
-              print("⚠️ [HISTORY] Erreur parsing time: $e");
+              print("⚠️ [HISTORY] Erreur date : $e");
               date = DateTime.now();
             }
 
-            cumulativeWater += 0.25;
+            cumulativeWater += 0.25; // Simulation de consommation d'eau
 
             return HistoryData(
               time: date,
@@ -105,10 +108,9 @@ class HistoryController extends GetxController {
           }).toList();
 
           isLoading.value = false;
-          print("✅ [HISTORY] ${historyRecords.length} enregistrements chargés");
         },
         onError: (e) {
-          print("❌ [HISTORY] Erreur Firestore: $e");
+          print("❌ [HISTORY] Erreur Firestore : $e");
           isLoading.value = false;
         });
   }

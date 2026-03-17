@@ -12,7 +12,7 @@ class DashboardController extends GetxController {
   // --- Données Capteur BGT-SMPS59 ---
   var soilMoisture = 0.0.obs;
   var temperature = 0.0.obs;
-  var phValue = 6.5.obs;
+  var phValue = 0.0.obs;
   var ecValue = 0.0.obs; // Conductivité électrique
   var nitrogen = 0.0.obs; // N
   var phosphorus = 0.0.obs; // P

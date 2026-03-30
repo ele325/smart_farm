@@ -48,8 +48,10 @@ class AlertsController extends GetxController {
   }
 
   // ✅ Titre traduit selon le type et la zone
-  String _buildTitle(String type, String zoneNum) {
+ String _buildTitle(String type, String zoneNum) {
     switch (type) {
+      case 'prediction': // <--- NOUVEAU : Cas pour l'IA
+        return 'Anticipation RoboCare : Zone $zoneNum 🧠'; 
       case 'low_humidity':
         return '${'alert_zone'.tr} $zoneNum 🚨';
       case 'high_humidity':
@@ -64,8 +66,9 @@ class AlertsController extends GetxController {
   // ✅ Message traduit avec la valeur injectée
   String _buildMessage(String type, double humidity) {
     switch (type) {
+      case 'prediction': // <--- NOUVEAU : Message pour l'IA
+        return 'L\'IA détecte une chute rapide (${humidity.toStringAsFixed(1)}%). Arrosage recommandé bientôt.';
       case 'low_humidity':
-        // "Humidité critique : 17.4%. Activation de la pompe."
         return '${'alert_critical_humidity'.tr} ${humidity.toStringAsFixed(1)}%. ${'alert_pump_activated'.tr}';
       case 'high_humidity':
         return '${'alert_high_humidity'.tr} ${humidity.toStringAsFixed(1)}%. ${'alert_pump_stopped'.tr}';
@@ -75,7 +78,6 @@ class AlertsController extends GetxController {
         return 'alert_unknown'.tr;
     }
   }
-
   void _setupPushNotifications() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       if (message.notification != null) {

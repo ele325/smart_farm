@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'dashboard_controller.dart';
 import 'package:smart_farm/app/widgets/history_chart.dart';
 import 'package:smart_farm/app/routes/routes.dart';
+import '../chat_ai/chat_page.dart';
 
 class DashboardPage extends StatelessWidget {
   DashboardPage({super.key});
@@ -19,10 +20,19 @@ class DashboardPage extends StatelessWidget {
         foregroundColor: Colors.white,
         elevation: 0,
       ),
+
+      // ✅ AJOUT DU BOUTON FLOTTANT POUR L'IA
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => Get.to(() => ChatPage()),
+        backgroundColor: const Color(0xFF1B5E20),
+        icon: const Icon(Icons.psychology, color: Colors.white), // Icône "Intelligence"
+        label: Text("ia_assistant".tr, style: const TextStyle(color: Colors.white)),
+        elevation: 4,
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _buildDynamicHeader(),
+          //_buildDynamicHeader(),
           const SizedBox(height: 15),
 
           // Alerte Humidité
@@ -49,7 +59,7 @@ class DashboardPage extends StatelessWidget {
 
           _buildSectionTitle('quick_access'.tr),
           _buildQuickAccess(),
-          const SizedBox(height: 20),
+          const SizedBox(height: 80),
         ],
       ),
     );

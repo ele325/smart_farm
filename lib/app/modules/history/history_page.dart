@@ -12,17 +12,21 @@ class HistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(HistoryController());
-    controller.fetchHistory(zoneId, 24);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchHistory(zoneId, controller.selectedPeriod.value);
+    });
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Historique - $zoneName"),
+        title: Text("${'history'.tr} - $zoneName"),
         backgroundColor: Colors.green[800],
         foregroundColor: Colors.white,
       ),
       body: Obx(() {
-        if (controller.isLoading.value) return const Center(child: CircularProgressIndicator());
-        if (controller.historyRecords.isEmpty) return const Center(child: Text("Aucune donnée disponible"));
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(15),
@@ -31,37 +35,109 @@ class HistoryPage extends StatelessWidget {
               _buildPeriodSelector(controller, zoneId),
               const SizedBox(height: 20),
 
-              _buildChartCard("Environnement (Hum, Temp, pH)", [
-                _lineData(controller.historyRecords, (d) => d.humidity, Colors.blue),
-                _lineData(controller.historyRecords, (d) => d.temperature, Colors.orange),
-                _lineData(controller.historyRecords, (d) => d.ph, Colors.green),
-              ], [
-                {'color': Colors.blue, 'label': 'Hum %'},
-                {'color': Colors.orange, 'label': 'Temp °C'},
-                {'color': Colors.green, 'label': 'pH'},
-              ], controller),
+              if (controller.historyRecords.isEmpty)
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 100),
+                    child: Column(
+                      children: [
+                        const Icon(Icons.analytics_outlined, size: 50, color: Colors.grey),
+                        const SizedBox(height: 10),
+                        Text("no_data_period".tr, textAlign: TextAlign.center),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                Column(
+                  children: [
+                    // Graphique 1 : Environnement
+                    _buildChartCard(
+                      "chart_env_title".tr,
+                      [
+                        _lineData(controller.historyRecords, (d) => d.humidity.toDouble(), Colors.blue),
+                        _lineData(controller.historyRecords, (d) => d.temperature.toDouble(), Colors.orange),
+                        _lineData(controller.historyRecords, (d) => d.ph.toDouble(), Colors.green),
+                      ],
+                      [
+                        {'color': Colors.blue, 'label': 'hum_short'.tr},
+                        {'color': Colors.orange, 'label': 'temp_short'.tr},
+                        {'color': Colors.green, 'label': 'ph_short'.tr},
+                      ],
+                      controller,
+                    ),
 
-              _buildChartCard("Nutriments & Sol (NPK, EC)", [
-                _lineData(controller.historyRecords, (d) => d.azote, Colors.red),
-                _lineData(controller.historyRecords, (d) => d.phosphore, Colors.yellow),
-                _lineData(controller.historyRecords, (d) => d.potassium, Colors.purple),
-                _lineData(controller.historyRecords, (d) => d.ec, Colors.brown),
-              ], [
-                {'color': Colors.red, 'label': 'N'},
-                {'color': Colors.yellow, 'label': 'P'},
-                {'color': Colors.purple, 'label': 'K'},
-                {'color': Colors.brown, 'label': 'EC'},
-              ], controller),
+                    // Graphique 2 : Nutriments (NPK, EC)
+                    _buildChartCard(
+                      "chart_nutrients_title".tr,
+                      [
+                        _lineData(controller.historyRecords, (d) => d.azote.toDouble(), Colors.red),
+                        _lineData(controller.historyRecords, (d) => d.phosphore.toDouble(), Colors.yellow),
+                        _lineData(controller.historyRecords, (d) => d.potassium.toDouble(), Colors.purple),
+                        _lineData(controller.historyRecords, (d) => d.ec.toDouble(), Colors.brown),
+                      ],
+                      [
+                        {'color': Colors.red, 'label': 'N'},
+                        {'color': Colors.yellow, 'label': 'P'},
+                        {'color': Colors.purple, 'label': 'K'},
+                        {'color': Colors.brown, 'label': 'ec_short'.tr},
+                      ],
+                      controller,
+                    ),
 
-              _buildChartCard("Consommation d'eau (m³)", [
-                _lineData(controller.historyRecords, (d) => d.waterConsumption, Colors.cyan, isArea: true),
-              ], [
-                {'color': Colors.cyan, 'label': 'Volume m³'},
-              ], controller),
+                    // Graphique 3 : Consommation d'eau
+                    _buildChartCard(
+                      "chart_water_title".tr,
+                      [
+                        _lineData(
+                          controller.historyRecords, 
+                          (d) => d.waterConsumption.toDouble(), 
+                          Colors.cyan, 
+                          isArea: true
+                        ),
+                      ],
+                      [
+                        {'color': Colors.cyan, 'label': 'water_volume_label'.tr},
+                      ],
+                      controller,
+                    ),
+                  ],
+                ),
             ],
           ),
         );
       }),
+    );
+  }
+
+  Widget _buildPeriodSelector(HistoryController controller, String zoneId) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text("analysis_period".tr, style: const TextStyle(fontWeight: FontWeight.bold)),
+            Obx(() => DropdownButton<int>(
+              value: controller.selectedPeriod.value,
+              underline: Container(),
+              items: [
+                DropdownMenuItem(value: 24, child: Text("24_hours".tr)),
+                DropdownMenuItem(value: 168, child: Text("7_days".tr)),
+                DropdownMenuItem(value: 720, child: Text("30_days".tr)),
+              ],
+              onChanged: (val) {
+                if (val != null) {
+                  controller.selectedPeriod.value = val;
+                  controller.fetchHistory(zoneId, val);
+                }
+              },
+            )),
+          ],
+        ),
+      ),
     );
   }
 
@@ -79,48 +155,35 @@ class HistoryPage extends StatelessWidget {
             const SizedBox(height: 20),
             SizedBox(
               height: 200,
-              child: LineChart(LineChartData(
-                lineBarsData: lines,
-                titlesData: FlTitlesData(
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 30,
-                      interval: 1,
-                      getTitlesWidget: (value, meta) {
-                        int index = value.toInt();
-                        if (index >= 0 && index < controller.historyRecords.length) {
-                          DateTime date = controller.historyRecords[index].time;
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(
-                              "${date.hour}:${date.minute.toString().padLeft(2, '0')}",
-                              style: const TextStyle(fontSize: 9, color: Colors.grey),
-                            ),
-                          );
-                        }
-                        return const SizedBox();
-                      },
+              child: LineChart(
+                LineChartData(
+                  lineBarsData: lines,
+                  titlesData: FlTitlesData(
+                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 30,
+                        interval: (controller.historyRecords.length / 5).clamp(1, double.infinity),
+                        getTitlesWidget: (value, meta) {
+                          int index = value.toInt();
+                          if (index >= 0 && index < controller.historyRecords.length) {
+                            DateTime date = controller.historyRecords[index].time;
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text("${date.day}/${date.month}", style: const TextStyle(fontSize: 9, color: Colors.grey)),
+                            );
+                          }
+                          return const SizedBox();
+                        },
+                      ),
                     ),
                   ),
+                  gridData: FlGridData(show: true, drawVerticalLine: true, getDrawingVerticalLine: (v) => FlLine(color: Colors.grey.withOpacity(0.1), strokeWidth: 1)),
+                  borderData: FlBorderData(show: true, border: Border.all(color: Colors.grey.withOpacity(0.3))),
                 ),
-                gridData: FlGridData(
-                  show: true,
-                  drawVerticalLine: true,
-                  getDrawingVerticalLine: (v) => FlLine(
-                    color: Colors.grey.withValues(alpha: 0.2), // ✅ FIX
-                    strokeWidth: 1,
-                  ),
-                ),
-                borderData: FlBorderData(
-                  show: true,
-                  border: Border.all(
-                    color: Colors.grey.withValues(alpha: 0.3), // ✅ FIX
-                  ),
-                ),
-              )),
+              ),
             ),
             const SizedBox(height: 15),
             _buildLegend(legendItems),
@@ -132,16 +195,11 @@ class HistoryPage extends StatelessWidget {
 
   Widget _buildLegend(List<Map<String, dynamic>> items) {
     return Wrap(
-      spacing: 15,
-      runSpacing: 5,
+      spacing: 15, runSpacing: 5,
       children: items.map((item) => Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 12,
-            height: 12,
-            decoration: BoxDecoration(color: item['color'], shape: BoxShape.circle),
-          ),
+          Container(width: 12, height: 12, decoration: BoxDecoration(color: item['color'], shape: BoxShape.circle)),
           const SizedBox(width: 6),
           Text(item['label'], style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
         ],
@@ -149,37 +207,14 @@ class HistoryPage extends StatelessWidget {
     );
   }
 
-  LineChartBarData _lineData(RxList<HistoryData> data, double Function(HistoryData) getY, Color color, {bool isArea = false}) {
+  LineChartBarData _lineData(RxList<dynamic> data, double Function(dynamic) getY, Color color, {bool isArea = false}) {
     return LineChartBarData(
       spots: data.asMap().entries.map((e) => FlSpot(e.key.toDouble(), getY(e.value))).toList(),
       isCurved: true,
-      preventCurveOverShooting: true,
       color: color,
       barWidth: 3,
-      dotData: const FlDotData(show: true),
-      belowBarData: BarAreaData(
-        show: isArea,
-        color: color.withValues(alpha: 0.2), // ✅ FIX
-      ),
-    );
-  }
-
-  Widget _buildPeriodSelector(HistoryController controller, String zoneId) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        const Text("Période d'analyse :", style: TextStyle(fontWeight: FontWeight.bold)),
-        Obx(() => DropdownButton<int>(
-          value: controller.selectedPeriod.value,
-          items: const [
-            DropdownMenuItem(value: 24, child: Text("24 Heures")),
-            DropdownMenuItem(value: 168, child: Text("7 Jours")),
-          ],
-          onChanged: (val) {
-            if (val != null) controller.fetchHistory(zoneId, val);
-          },
-        )),
-      ],
+      dotData: const FlDotData(show: false),
+      belowBarData: BarAreaData(show: isArea, color: color.withOpacity(0.2)),
     );
   }
 }

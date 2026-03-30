@@ -32,3 +32,16 @@ subprojects {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
+
+// ... votre code existant (allprojects, subprojects buildDir, etc.)
+
+// AJOUTEZ CE BLOC ICI :
+subprojects {
+    configurations.all {
+        resolutionStrategy.eachDependency {
+            if (requested.group == "org.jetbrains.kotlin") {
+                useVersion("2.3.10") // On force tout le monde sur la version que le compilateur comprend
+            }
+        }
+    }
+}

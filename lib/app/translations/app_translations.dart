@@ -166,6 +166,17 @@ class AppTranslations extends Translations {
       'satellite_imagery': 'رسم الخرائط',
       'satellite_imagery_desc': 'تصور مناطقك الزراعية وحالتها على خريطة تفاعلية.',
 
+  'no_data_period': 'لا توجد بيانات متاحة لهذه الفترة',
+  
+  '30_days': '30 يوم',
+  'chart_env_title': 'البيئة (الرطوبة، الحرارة، pH)',
+  'chart_nutrients_title': 'العناصر الغذائية والتربة (NPK, EC)',
+  'chart_water_title': 'استهلاك المياه (م³)',
+ 
+  'ph_short': 'pH',
+  'ec_short': 'ناقلية',
+  'water_volume_label': 'حجم م³',
+
       'alerts_system': 'نظام التنبيهات',
       'critique': 'حرج',
       'warning': 'تحذير',
@@ -183,11 +194,26 @@ class AppTranslations extends Translations {
       'alert_pump_stopped': 'إيقاف المضخة.',
       'alert_ph_abnormal': 'تم اكتشاف pH غير طبيعي.',
       'alert_unknown': 'تنبيه غير معروف.',
+      'session_prefix': 'جلسة بتاريخ',
       'notifications': 'الإشعارات',
       'notif_enabled': 'تم تفعيل الإشعارات',
       'notif_disabled': 'تم إيقاف الإشعارات',
       'Humidité critique !': 'رطوبة حرجة !',
       'IRRIGUER': 'ري الآن',
+      'ia_assistant': 'مساعد الذكاء الاصطناعي',
+
+      'chat_bot_title': 'مساعد RoboCare الذكي',
+'new_chat_tooltip': 'محادثة جديدة',
+'history_title': 'سجل RoboCare',
+'no_history': 'لم يتم العثور على سجل.',
+'session_date': 'جلسة بتاريخ @date',
+'new_chat_title': 'محادثة جديدة',
+'new_chat_subtitle': 'اسأل سؤالاً عن زراعتك.',
+'delete_confirm_title': 'حذف ؟',
+'delete_confirm_msg': 'هل تريد حقًا مسح هذه المحادثة؟',
+'no': 'لا',
+'yes_delete': 'نعم ، حذف',
+
 
       
 
@@ -215,6 +241,7 @@ class AppTranslations extends Translations {
       'back_to_login': 'Retour à la connexion',
       'reset_title': 'Réinitialisez votre mot de passe',
       'logout': 'Se déconnecter',
+      'ia_assistant': 'Assistant IA',
 
       // --- Hints & Errors ---
       'email_hint': 'votre_nom@exemple.com',
@@ -227,6 +254,33 @@ class AppTranslations extends Translations {
       'veuillez_remplir_champs': 'Veuillez remplir tous les champs',
       'welcome': 'Bienvenue',
       'loading': 'Chargement...',
+
+      'chat_bot_title': 'Assistant IA RoboCare',
+      'history': 'Historique',
+  'no_data_period': 'Aucune donnée disponible pour cette période',
+  'analysis_period': 'Période d\'analyse :',
+  '24_hours': '24 Heures',
+  '7_days': '7 Jours',
+  '30_days': '30 Jours',
+  'chart_env_title': 'Environnement (Humidité, Temp, pH)',
+  'chart_nutrients_title': 'Nutriments & Sol (NPK, EC)',
+  'chart_water_title': 'Consommation d\'eau (m³)',
+  'hum_short': 'Hum %',
+  'temp_short': 'Temp °C',
+  'ph_short': 'pH',
+  'ec_short': 'EC',
+  'water_volume_label': 'Volume m³',
+'new_chat_tooltip': 'Nouvelle discussion',
+'history_title': 'Historique RoboCare',
+'no_history': 'Aucun historique trouvé.',
+'session_date': 'Session du @date',
+'new_chat_title': 'Nouvelle Discussion',
+'new_chat_subtitle': 'Posez une question sur vos cultures.',
+'delete_confirm_title': 'Supprimer ?',
+'delete_confirm_msg': 'Voulez-vous vraiment effacer cette discussion ?',
+'no': 'Non',
+'yes_delete': 'Oui, supprimer',
+
       
 
       // --- Dashboard & Navigation ---
@@ -237,7 +291,6 @@ class AppTranslations extends Translations {
       'general_status': 'STATUT GÉNÉRAL',
       'physical_status': 'STATUT PHYSIQUE',
       'quick_access': 'ACCÈS RAPIDE',
-      'history': 'Historique',
       'map': 'Carte',
       'thresholds': 'Seuils',
       'analysis_24h': 'ANALYSE (24h)',
@@ -329,12 +382,9 @@ class AppTranslations extends Translations {
 
       'no_data_selected': 'Aucune zone sélectionnée',
       'choose_zone_hint': 'Veuillez choisir une zone pour voir les analyses',
-      'analysis_period': "Période d'analyse",
-      '24_hours': 'Dernières 24 heures',
-      '7_days': '7 derniers jours',
+      
       'env_analysis': 'Analyse Environnementale',
-      'hum_short': 'Hum.',
-      'temp_short': 'Temp.',
+      
       'water_consumption': "Consommation d'eau",
       'volume_m3': 'Volume (m³)',
       'ec_level': 'Niveau de EC',
@@ -364,6 +414,8 @@ class AppTranslations extends Translations {
       'access_denied': 'Accès refusé',
       'gallery': 'Galerie',
       'camera': 'Caméra',
+      'session_prefix': 'Session du',
+      'ia_assistant': 'Assistant IA',
      
     },
     'en': {
@@ -443,6 +495,22 @@ class AppTranslations extends Translations {
       'satellite_imagery': 'Mapping',
       'satellite_imagery_desc': 'Visualize your agricultural zones and their status on an interactive map.',
 
+
+
+  'no_data_period': 'No data available for this period',
+  'session_prefix': 'Session of',
+  'analysis_period': 'Analysis Period:',
+  '24_hours': '24 Hours',
+  '7_days': '7 Days',
+  '30_days': '30 Days',
+  'chart_env_title': 'Environment (Humidity, Temp, pH)',
+  'chart_nutrients_title': 'Nutrients & Soil (NPK, EC)',
+  'chart_water_title': 'Water Consumption (m³)',
+  'hum_short': 'Hum %',
+  'temp_short': 'Temp °C',
+  'ph_short': 'pH',
+  'ec_short': 'EC',
+  'water_volume_label': 'Volume m³',
       // --- Real-time Data ---
       'soil': 'Soil Humidity',
       'temperature': 'Temperature',
@@ -495,6 +563,7 @@ class AppTranslations extends Translations {
       'notifications': 'Notifications',
       'notif_enabled': 'Notifications enabled',
       'notif_disabled': 'Notifications disabled',
+      'ia_assistant': 'AI Assistant',
 
       // --- VFD Control ---
       'vfd_control': 'VFD Control',
@@ -515,7 +584,7 @@ class AppTranslations extends Translations {
 
       'no_data_selected': 'No Zone Selected',
       'choose_zone_hint': 'Please select a zone to view analytics',
-      'analysis_period': 'Analysis Period',
+      
       'Humidité': 'Humidity',
       'delete_photo': 'Delete photo',
       'photo_deleted': 'Photo deleted successfully',
@@ -526,15 +595,30 @@ class AppTranslations extends Translations {
       'N': 'Nitrogen',
       'P': 'Phosphorus',
       'K': 'Potassium',
-      '24_hours': 'Last 24 Hours',
-      '7_days': 'Last 7 Days',
+      
       'env_analysis': 'Environmental Analysis',
-      'hum_short': 'Hum',
-      'temp_short': 'Temp.',
+      
       'water_consumption': 'Water Consumption',
       'volume_m3': 'Volume (m³)',
       'ec_level': 'EC Level',
       'humidity': 'Humidity',
+
+      // --- ChatBot & AI ---
+      'chat_bot_title': 'RoboCare Smart Assistant',
+      'new_chat_tooltip': 'New Chat',
+      'history_title': 'RoboCare History',
+      'no_history': 'No history found.',
+      'session_date': 'Session on @date',
+      'new_chat_title': 'New Discussion',
+      'new_chat_subtitle': 'Ask a question about your crops.',
+      'delete_confirm_title': 'Delete?',
+      'delete_confirm_msg': 'Do you really want to clear this chat?',
+      'no': 'No',
+      'yes_delete': 'Yes, delete',
+      'mic_language_tooltip': 'Mic Language',
+      'type_here': 'Type here...',
+      'ask_crops_hint': 'Ask a question about your crops.',
+      'cancel': 'Cancel',
     },
   };
 }

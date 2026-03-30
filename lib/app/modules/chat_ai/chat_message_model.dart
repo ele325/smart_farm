@@ -5,13 +5,19 @@ class ChatMessage {
   final String sender; // 'user' ou 'ai'
   final DateTime timestamp;
 
-  ChatMessage({required this.text, required this.sender, required this.timestamp});
+  ChatMessage({
+    required this.text,
+    required this.sender,
+    required this.timestamp,
+  });
 
   factory ChatMessage.fromFirestore(Map<String, dynamic> data) {
     return ChatMessage(
       text: data['text'] ?? '',
       sender: data['sender'] ?? 'ai',
-      timestamp: (data['timestamp'] as Timestamp).toDate(),
+      timestamp: data['timestamp'] != null
+          ? (data['timestamp'] as Timestamp).toDate()
+          : DateTime.now(),
     );
   }
 }

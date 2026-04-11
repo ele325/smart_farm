@@ -18,6 +18,6 @@ abstract class Routes {
   static const thresholds = '/thresholds';
   static const pump = '/pump';
   static const history = '/history';
-  static const map = '/map';
+  static const prediction_ai = '/prediction-ai';
   static const variateurControl = '/variateur-control';
 }

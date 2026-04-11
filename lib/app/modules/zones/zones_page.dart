@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'zones_controller.dart';
 import '../history/history_page.dart';
+import '../thresholds/thresholds_page.dart';
 
 class ZonesPage extends StatelessWidget {
   ZonesPage({super.key});
 
-  // Utilisation de permanent: true pour éviter les erreurs "Controller not found"
   final ZonesController controller = Get.put(
     ZonesController(),
     permanent: true,
@@ -14,7 +14,6 @@ class ZonesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Ajout du Scaffold avec AppBar comme dans le tableau de bord
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
@@ -45,8 +44,7 @@ class ZonesPage extends StatelessWidget {
             crossAxisCount: 2,
             mainAxisSpacing: 12,
             crossAxisSpacing: 12,
-            childAspectRatio:
-                0.58, // Ajusté pour éviter les débordements (overflow)
+            childAspectRatio: 0.55,
           ),
           itemBuilder: (context, index) =>
               _construireCarteZone(controller.zones[index]),
@@ -59,7 +57,6 @@ class ZonesPage extends StatelessWidget {
     return Obx(() {
       bool estEnAlerte = zone.humidity.value < 30;
 
-      // Gestion du nom de la zone avec traduction
       String zoneName = zone.zoneNum.isNotEmpty
           ? '${'zone_label'.tr} ${zone.zoneNum}'
           : zone.name;
@@ -81,7 +78,6 @@ class ZonesPage extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // --- ICÔNE D'ÉTAT ---
                     Icon(
                       estEnAlerte ? Icons.warning_amber_rounded : Icons.eco,
                       color: estEnAlerte ? Colors.red : Colors.green,
@@ -98,7 +94,6 @@ class ZonesPage extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
 
-                    // Badge d'alerte humidité
                     if (estEnAlerte)
                       Container(
                         margin: const EdgeInsets.only(top: 2),
@@ -122,7 +117,6 @@ class ZonesPage extends StatelessWidget {
 
                     const Divider(height: 8),
 
-                    // --- DONNÉES CAPTEURS ---
                     _buildSensorRow(
                       Icons.opacity,
                       '${'hum_short'.tr}: ${zone.humidity.value.toStringAsFixed(1)}%',
@@ -146,7 +140,6 @@ class ZonesPage extends StatelessWidget {
 
                     const SizedBox(height: 4),
 
-                    // --- BADGES NPK ---
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
@@ -162,7 +155,33 @@ class ZonesPage extends StatelessWidget {
 
                     const Spacer(),
 
-                    // --- BOUTON POMPE ---
+                    // --- BOUTON SEUILS ---
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.green[800],
+                          side: BorderSide(color: Colors.green[800]!),
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        icon: const Icon(Icons.tune, size: 14),
+                        label: Text(
+                          'thresholds'.tr,
+                          style: const TextStyle(fontSize: 10),
+                        ),
+                        onPressed: () => Get.to(
+                          () => ThresholdsPage(
+                            zoneName: zoneName,
+                            zoneId: zone.id,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // --- SWITCH POMPE ---
                     Transform.scale(
                       scale: 0.8,
                       child: Switch(
@@ -186,7 +205,7 @@ class ZonesPage extends StatelessWidget {
               ),
             ),
 
-            // --- BOUTON HISTORIQUE (Top Right) ---
+            // --- BOUTON HISTORIQUE ---
             Positioned(
               top: 2,
               right: 2,

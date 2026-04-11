@@ -415,7 +415,6 @@ class AppTranslations extends Translations {
       'gallery': 'Galerie',
       'camera': 'Caméra',
       'session_prefix': 'Session du',
-      'ia_assistant': 'Assistant IA',
      
     },
     'en': {

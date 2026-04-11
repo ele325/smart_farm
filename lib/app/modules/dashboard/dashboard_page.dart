@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import 'dashboard_controller.dart';
 import 'package:smart_farm/app/widgets/history_chart.dart';
 import 'package:smart_farm/app/routes/routes.dart';
+import '../prediction_ai/prediction_page.dart';
 import '../chat_ai/chat_page.dart';
-
 class DashboardPage extends StatelessWidget {
   DashboardPage({super.key});
   final controller = Get.put(DashboardController());
@@ -258,10 +258,10 @@ class DashboardPage extends StatelessWidget {
             () => Get.toNamed(Routes.history),
           ),
           _quickItem(
-            Icons.map,
-            "map".tr,
+            Icons.trending_up,
+            "prediction".tr,
             Colors.brown,
-            () => Get.toNamed(Routes.map),
+            () => Get.to(() => PredictionPage()),
           ),
         ],
       ),

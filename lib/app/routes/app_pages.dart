@@ -9,7 +9,7 @@ import '../modules/thresholds/thresholds_page.dart';
 import '../modules/pump/pump_page.dart';
 import '../modules/history/history_page.dart';
 import '../modules/alerts/alerts_page.dart';
-import '../modules/map/map_page.dart';
+import '../modules/prediction_ai/prediction_page.dart';
 import '../modules/profile/profile_page.dart';
 import '../modules/control/variateur_control_page.dart';
 import 'routes.dart';
@@ -19,7 +19,7 @@ class AppPages {
     // Auth pages
     GetPage(name: Routes.login, page: () => LoginPage()),
     GetPage(name: Routes.forgotPassword, page: () => ForgotPasswordPage()),
-    GetPage(name: Routes.signup, page: () => SignupPage()), 
+    GetPage(name: Routes.signup, page: () => SignupPage()),
     GetPage(name: Routes.language, page: () => const LanguagePage()),
 
     // Main
@@ -27,25 +27,28 @@ class AppPages {
 
     // Features
     GetPage(name: Routes.zones, page: () => ZonesPage()),
-    GetPage(name: Routes.thresholds, page: () => ThresholdsPage()),
+    GetPage(
+      name: Routes.thresholds,
+      page: () {
+        final args = Get.arguments ?? {'name': 'Zone', 'id': ''};
+        return ThresholdsPage(zoneName: args['name'], zoneId: args['id']);
+      },
+    ),
     GetPage(name: Routes.pump, page: () => PumpPage()),
     GetPage(name: Routes.variateurControl, page: () => VariateurPage()),
-    
+
     // Correction de la route History avec sécurité anti-crash
     GetPage(
-      name: Routes.history, 
+      name: Routes.history,
       page: () {
         // On récupère les arguments en vérifiant s'ils ne sont pas nuls
         final args = Get.arguments ?? {'name': 'Zone', 'id': ''};
-        return HistoryPage(
-          zoneName: args['name'], 
-          zoneId: args['id'],
-        );
+        return HistoryPage(zoneName: args['name'], zoneId: args['id']);
       },
     ),
 
     GetPage(name: Routes.alerts, page: () => AlertsPage()),
-    GetPage(name: Routes.map, page: () => MapPage()),
+    GetPage(name: Routes.prediction_ai, page: () => PredictionPage()),
     GetPage(name: Routes.profile, page: () => ProfilePage()),
   ];
 }

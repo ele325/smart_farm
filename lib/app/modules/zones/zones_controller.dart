@@ -79,25 +79,27 @@ class ZonesController extends GetxController {
           print("📦 [ZONES] ${snapshot.docs.length} zones reçues depuis Firebase");
 
           // ✅ Remplacer entièrement la liste (gère suppressions + ajouts)
-          zones.assignAll(
-            snapshot.docs.map((doc) {
-              final d = doc.data();
-              return Zone(
-                id:          doc.id,
-                name:        d['name']        ?? 'Zone ?',
-                zoneNum:     d['zone_num']    ?? '',
-                status:      d['enabled']     ?? false,
-                humidity:    (d['humidity']    ?? 0.0).toDouble(),
-                temperature: (d['temperature'] ?? 0.0).toDouble(),
-                ph:          (d['ph']          ?? 0.0).toDouble(),
-                ec:          (d['ec']          ?? 0.0).toDouble(),
-                azote:       (d['azote']       ?? 0.0).toDouble(),
-                phosphore:   (d['phosphore']   ?? 0.0).toDouble(),
-                potassium:   (d['potassium']   ?? 0.0).toDouble(),
-                sante:       (d['sante']       ?? 0).toInt(),
-              );
-            }).toList(),
-          );
+          // ✅ Dans zones_controller.dart
+zones.assignAll(
+  snapshot.docs.map((doc) {
+    final d = doc.data();
+    return Zone(
+      id:          doc.id,
+      name:        d['name']          ?? 'Zone',
+      zoneNum:     d['zone_num']     ?? doc.id.replaceAll('zone', ''), // Récupère le numéro depuis l'ID si vide
+      status:      d['enabled']       ?? false,
+      // Vérifie bien les noms ici :
+      humidity:    (d['humidity']     ?? 0.0).toDouble(),
+      temperature: (d['temperature']  ?? 0.0).toDouble(),
+      ph:          (d['ph']           ?? 0.0).toDouble(),
+      ec:          (d['ec']           ?? 0.0).toDouble(),
+      azote:       (d['azote']        ?? 0.0).toDouble(),
+      phosphore:   (d['phosphore']    ?? 0.0).toDouble(),
+      potassium:   (d['potassium']    ?? 0.0).toDouble(),
+      sante:       (d['health_score'] ?? 0).toInt(), // Changé 'sante' en 'health_score'
+    );
+  }).toList(),
+);
 
         }, onError: (e) {
           print("❌ [ZONES] Erreur Firestore: $e");

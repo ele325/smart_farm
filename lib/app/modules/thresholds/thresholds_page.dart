@@ -3,9 +3,15 @@ import 'package:get/get.dart';
 import 'thresholds_controller.dart';
 
 class ThresholdsPage extends StatelessWidget {
-  ThresholdsPage({super.key});
+  final String zoneId;
+  final String zoneName;
 
-  final ThresholdsController controller = Get.put(ThresholdsController());
+  ThresholdsPage({super.key, required this.zoneId, required this.zoneName});
+
+  late final ThresholdsController controller = Get.put(
+    ThresholdsController(zoneId: zoneId, zoneName: zoneName),
+    tag: zoneId,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +19,7 @@ class ThresholdsPage extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-          "irrigation_thresholds".tr,
+          "${"irrigation_thresholds".tr} — $zoneName",
           style: const TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.green[800],
@@ -70,7 +76,7 @@ class ThresholdsPage extends StatelessWidget {
             _buildDurationCard(),
             const SizedBox(height: 40),
 
-            // --- BOUTON DE SAUVEGARDE SYNCHRONISÉ ---
+            // --- BOUTON SAUVEGARDE ---
             Obx(
               () => SizedBox(
                 width: double.infinity,
@@ -115,8 +121,6 @@ class ThresholdsPage extends StatelessWidget {
       ),
     );
   }
-
-  // --- WIDGETS AUXILIAIRES ---
 
   Widget _buildThresholdCard({
     required String title,
@@ -212,8 +216,10 @@ class ThresholdsPage extends StatelessWidget {
               value: controller.duration.value,
               items: [5, 10, 15, 30]
                   .map(
-                    (val) =>
-                        DropdownMenuItem(value: val, child: Text("$val min")),
+                    (val) => DropdownMenuItem(
+                      value: val,
+                      child: Text("$val min"),
+                    ),
                   )
                   .toList(),
               onChanged: (val) => controller.duration.value = val!,

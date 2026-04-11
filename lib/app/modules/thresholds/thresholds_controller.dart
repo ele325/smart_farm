@@ -7,11 +7,15 @@ class ThresholdsController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Variables observables
+  final String zoneId;
+  final String zoneName;
+
+  ThresholdsController({required this.zoneId, required this.zoneName});
+
   RxDouble minHumidity = 30.0.obs;
   RxDouble maxHumidity = 70.0.obs;
   RxInt duration = 15.obs;
-  RxBool isLoading = false.obs; // État pour le bouton de sauvegarde
+  RxBool isLoading = false.obs;
 
   @override
   void onInit() {
@@ -24,6 +28,8 @@ class ThresholdsController extends GetxController {
     _firestore
         .collection('users')
         .doc(uid)
+        .collection('zones')
+        .doc(zoneId)
         .collection('config')
         .doc('thresholds')
         .snapshots()
@@ -39,12 +45,13 @@ class ThresholdsController extends GetxController {
 
   Future<bool> saveSettings() async {
     String? uid = _auth.currentUser?.uid;
-
     try {
       isLoading.value = true;
       await _firestore
           .collection('users')
           .doc(uid)
+          .collection('zones')
+          .doc(zoneId)
           .collection('config')
           .doc('thresholds')
           .set({

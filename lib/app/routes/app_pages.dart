@@ -22,7 +22,10 @@ class AppPages {
     GetPage(name: Routes.forgotPassword, page: () => ForgotPasswordPage()),
     GetPage(name: Routes.signup, page: () => SignupPage()),
     GetPage(name: Routes.language, page: () => const LanguagePage()),
-    GetPage(name: Routes.emailVerification, page: () => EmailVerificationPage()),
+    GetPage(
+      name: Routes.emailVerification,
+      page: () => EmailVerificationPage(),
+    ),
 
     // Main
     GetPage(name: Routes.dashboard, page: () => RootPage()),

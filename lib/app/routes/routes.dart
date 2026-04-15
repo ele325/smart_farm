@@ -20,4 +20,5 @@ abstract class Routes {
   static const history = '/history';
   static const prediction_ai = '/prediction-ai';
   static const variateurControl = '/variateur-control';
+  static const emailVerification = '/email-verification';
 }

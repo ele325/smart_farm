@@ -3,6 +3,7 @@ import '../modules/auth/login/login_page.dart';
 import '../modules/auth/signup/signup_page.dart';
 import '../modules/auth/language_page.dart';
 import '../modules/auth/forgot_password/forgot_password_page.dart';
+import '../modules/auth/email_verification.dart';
 import '../modules/root/root_page.dart';
 import '../modules/zones/zones_page.dart';
 import '../modules/thresholds/thresholds_page.dart';
@@ -21,6 +22,7 @@ class AppPages {
     GetPage(name: Routes.forgotPassword, page: () => ForgotPasswordPage()),
     GetPage(name: Routes.signup, page: () => SignupPage()),
     GetPage(name: Routes.language, page: () => const LanguagePage()),
+    GetPage(name: Routes.emailVerification, page: () => EmailVerificationPage()),
 
     // Main
     GetPage(name: Routes.dashboard, page: () => RootPage()),

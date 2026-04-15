@@ -43,6 +43,7 @@ dependencies:
   
   
   get: ^4.7.3
+  http: ^1.6.0
 
   # Local storage
   get_storage: ^2.1.1

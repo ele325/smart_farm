@@ -7,9 +7,9 @@ class HistoryData {
   final double humidity;
   final double temperature;
   final double ph;
-  final double azote;
-  final double phosphore;
-  final double potassium;
+  final double n;           // ✅ était: azote
+  final double p;           // ✅ était: phosphore
+  final double k;           // ✅ était: potassium
   final double ec;
   final double waterConsumption;
 
@@ -18,9 +18,9 @@ class HistoryData {
     required this.humidity,
     required this.temperature,
     required this.ph,
-    required this.azote,
-    required this.phosphore,
-    required this.potassium,
+    required this.n,        // ✅
+    required this.p,        // ✅
+    required this.k,        // ✅
     required this.ec,
     this.waterConsumption = 0.0,
   });
@@ -29,13 +29,12 @@ class HistoryData {
 class HistoryController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
   RxList<HistoryData> historyRecords = <HistoryData>[].obs;
   RxBool isLoading = true.obs;
   RxInt selectedPeriod = 24.obs;
 
   void fetchHistory(String zoneId, int hours) {
-    // 1. Sécurité : Vérifier l'ID de la zone et l'utilisateur
     String? uid = _auth.currentUser?.uid;
     if (uid == null || zoneId.isEmpty) {
       print("❌ [HISTORY] Erreur : UID ou ZoneId vide.");
@@ -47,15 +46,14 @@ class HistoryController extends GetxController {
     selectedPeriod.value = hours;
     DateTime startTime = DateTime.now().subtract(Duration(hours: hours));
 
-    print("🔍 [HISTORY] Chargement : users/$uid/zones/$zoneId/history");
+    print("🔍 [HISTORY] Chargement : users/$uid/zones/$zoneId/measures");
 
     _firestore
         .collection('users')
         .doc(uid)
         .collection('zones')
         .doc(zoneId)
-        .collection('history')
-        // ✅ Correction : On filtre sur 'last_update' car 'time' n'existe pas dans vos docs
+        .collection('measures')
         .where('last_update', isGreaterThan: Timestamp.fromDate(startTime))
         .orderBy('last_update', descending: false)
         .snapshots()
@@ -74,35 +72,33 @@ class HistoryController extends GetxController {
           historyRecords.value = snapshot.docs.map((doc) {
             var data = doc.data();
 
-            // ✅ Conversion sécurisée des types
             double hum  = (data['humidity']    ?? 0.0).toDouble();
             double temp = (data['temperature'] ?? 0.0).toDouble();
             double phV  = (data['ph']          ?? 0.0).toDouble();
-            double n    = (data['azote']       ?? 0.0).toDouble();
-            double p    = (data['phosphore']   ?? 0.0).toDouble();
-            double k    = (data['potassium']   ?? 0.0).toDouble();
+            double nV   = (data['n']           ?? 0.0).toDouble(); // ✅ était 'azote'
+            double pV   = (data['p']           ?? 0.0).toDouble(); // ✅ était 'phosphore'
+            double kV   = (data['k']           ?? 0.0).toDouble(); // ✅ était 'potassium'
             double ecV  = (data['ec']          ?? 0.0).toDouble();
 
             DateTime date;
             try {
-              // ✅ Correction : Utilisation du bon nom de champ 'last_update'
               date = (data['last_update'] as Timestamp).toDate();
             } catch (e) {
               print("⚠️ [HISTORY] Erreur date : $e");
               date = DateTime.now();
             }
 
-            cumulativeWater += 0.25; // Simulation de consommation d'eau
+            cumulativeWater += 0.25;
 
             return HistoryData(
-              time: date,
-              humidity: hum,
-              temperature: temp,
-              ph: phV,
-              azote: n,
-              phosphore: p,
-              potassium: k,
-              ec: ecV,
+              time:             date,
+              humidity:         hum,
+              temperature:      temp,
+              ph:               phV,
+              n:                nV,  // ✅
+              p:                pV,  // ✅
+              k:                kV,  // ✅
+              ec:               ecV,
               waterConsumption: cumulativeWater,
             );
           }).toList();

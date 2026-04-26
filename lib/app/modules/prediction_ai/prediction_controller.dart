@@ -101,13 +101,13 @@ class PredictionController extends GetxController {
       final zoneId = zones[index]['id'] as String;
 
       // ── Dernière prédiction ML écrite par predictor.py ────────────────────
+      // ✅ 'history' → 'predictions'
       final predSnap = await _firestore
           .collection('users')
           .doc(uid)
           .collection('zones')
           .doc(zoneId)
-          .collection('history')
-          .where('type', isEqualTo: 'irrigation_combined')
+          .collection('predictions')
           .orderBy('timestamp', descending: true)
           .limit(1)
           .get();
@@ -142,12 +142,13 @@ class PredictionController extends GetxController {
       healthScore.value = (zones[index]['sante'] ?? 5) as int;
 
       // ── Historique brut capteurs (30 derniers relevés) ────────────────────
+      // ✅ 'history' → 'measures'
       final histSnap = await _firestore
           .collection('users')
           .doc(uid)
           .collection('zones')
           .doc(zoneId)
-          .collection('history')
+          .collection('measures')
           .orderBy('timestamp', descending: true)
           .limit(30)
           .get();

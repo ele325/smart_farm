@@ -32,11 +32,9 @@ class ProfilePage extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            // ── En-tête profil ──────────────────────────────────────────────
             _buildProfileHeader(controller, context),
             const SizedBox(height: 25),
 
-            // ── Abonnement actuel ───────────────────────────────────────────
             SectionCard(
               title: "current_subscription".tr,
               child: Obx(
@@ -49,7 +47,6 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
 
-            // ── Services supplémentaires ────────────────────────────────────
             SectionCard(
               title: "buy_additional_services".tr,
               child: Column(
@@ -69,7 +66,6 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
 
-            // ── Historique facturation ──────────────────────────────────────
             SectionCard(
               title: "billing_history".tr,
               child: Obx(
@@ -82,14 +78,17 @@ class ProfilePage extends StatelessWidget {
                         color: Colors.blueGrey,
                       ),
                       title: Text(facture['service']!.tr),
-                      subtitle: Text("${facture['date']} - ${facture['prix']}"),
+                      subtitle: Text(
+                        "${facture['date']} - ${facture['prix']}",
+                      ),
                       trailing: IconButton(
                         icon: const Icon(
                           Icons.download_rounded,
                           color: Colors.blue,
                         ),
-                        onPressed: () =>
-                            controller.downloadInvoice(facture['id']!),
+                        onPressed: () {
+                          controller.downloadInvoice(facture['id']!);
+                        },
                       ),
                     );
                   }).toList(),
@@ -99,7 +98,6 @@ class ProfilePage extends StatelessWidget {
 
             const SizedBox(height: 30),
 
-            // ── Bouton déconnexion ──────────────────────────────────────────
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
@@ -121,7 +119,6 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // ── En-tête profil avec photo ─────────────────────────────────────────────
   Widget _buildProfileHeader(
     ProfileController controller,
     BuildContext context,
@@ -131,10 +128,8 @@ class ProfilePage extends StatelessWidget {
         Stack(
           alignment: Alignment.bottomRight,
           children: [
-            // ── Avatar : priorité photo locale > Google > icône ─────────────
             Obx(() {
               if (controller.profileImagePath.value.isNotEmpty) {
-                // Photo locale choisie par l'utilisateur
                 return CircleAvatar(
                   radius: 60,
                   backgroundImage: FileImage(
@@ -142,26 +137,28 @@ class ProfilePage extends StatelessWidget {
                   ),
                 );
               }
+
               if (controller.googlePhotoUrl.value.isNotEmpty) {
-                // Photo Google (compte Google connecté)
                 return CircleAvatar(
                   radius: 60,
                   backgroundImage: NetworkImage(
                     controller.googlePhotoUrl.value,
                   ),
                   onBackgroundImageError: (_, __) {},
-                  child: null,
                 );
               }
-              // Icône par défaut
+
               return CircleAvatar(
                 radius: 60,
                 backgroundColor: Colors.green[50],
-                child: const Icon(Icons.person, size: 60, color: Colors.green),
+                child: const Icon(
+                  Icons.person,
+                  size: 60,
+                  color: Colors.green,
+                ),
               );
             }),
 
-            // ── Bouton caméra ────────────────────────────────────────────────
             CircleAvatar(
               backgroundColor: const Color(0xFF1B5E20),
               radius: 18,
@@ -177,17 +174,19 @@ class ProfilePage extends StatelessWidget {
             ),
           ],
         ),
+
         const SizedBox(height: 15),
 
-        // Nom
         Obx(
           () => Text(
             controller.userName.value,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
 
-        // Email
         Obx(
           () => Text(
             controller.email.value,
@@ -198,35 +197,75 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // ── Tuile service supplémentaire ──────────────────────────────────────────
   Widget _buildServiceTile(
     String titleKey,
     IconData icon,
     ProfileController controller,
   ) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Icon(icon, color: Colors.green[700]),
-      title: Text(titleKey.tr),
-      trailing: const Icon(Icons.chevron_right),
-      onTap: () => controller.buyService(titleKey),
-    );
+    return Obx(() {
+      final alreadyExists = controller.billingHistory.any(
+        (item) => item['service'] == titleKey,
+      );
+
+      final disabled = controller.isLoading.value || alreadyExists;
+
+      return ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: Icon(
+          icon,
+          color: disabled ? Colors.grey : Colors.green[700],
+        ),
+        title: Text(
+          titleKey.tr,
+          style: TextStyle(
+            color: disabled ? Colors.grey : Colors.black,
+          ),
+        ),
+        subtitle: alreadyExists
+            ? const Text(
+                'Déjà demandé',
+                style: TextStyle(color: Colors.orange),
+              )
+            : null,
+        trailing: controller.isLoading.value
+            ? const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : Icon(
+                alreadyExists ? Icons.check_circle : Icons.chevron_right,
+                color: alreadyExists ? Colors.green : Colors.grey,
+              ),
+        onTap: disabled
+            ? null
+            : () {
+                controller.buyService(titleKey);
+              },
+      );
+    });
   }
 
-  // ── Bottom sheet choix photo ──────────────────────────────────────────────
-  void _showImagePicker(BuildContext context, ProfileController controller) {
+  void _showImagePicker(
+    BuildContext context,
+    ProfileController controller,
+  ) {
     Get.bottomSheet(
       Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 10,
+        ),
         decoration: const BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(20),
+          ),
         ),
         child: Obx(
           () => Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Barre drag
               Container(
                 margin: const EdgeInsets.only(bottom: 10),
                 width: 40,
@@ -238,22 +277,30 @@ class ProfilePage extends StatelessWidget {
               ),
 
               ListTile(
-                leading: const Icon(Icons.photo_library, color: Colors.green),
+                leading: const Icon(
+                  Icons.photo_library,
+                  color: Colors.green,
+                ),
                 title: Text('gallery'.tr),
                 onTap: () => controller.pickImage(ImageSource.gallery),
               ),
 
               ListTile(
-                leading: const Icon(Icons.camera_alt, color: Colors.green),
+                leading: const Icon(
+                  Icons.camera_alt,
+                  color: Colors.green,
+                ),
                 title: Text('camera'.tr),
                 onTap: () => controller.pickImage(ImageSource.camera),
               ),
 
-              // Option supprimer — visible seulement si photo locale existe
               if (controller.profileImagePath.value.isNotEmpty) ...[
                 const Divider(),
                 ListTile(
-                  leading: const Icon(Icons.delete_outline, color: Colors.red),
+                  leading: const Icon(
+                    Icons.delete_outline,
+                    color: Colors.red,
+                  ),
                   title: Text(
                     'delete_photo'.tr,
                     style: const TextStyle(color: Colors.red),

@@ -7,6 +7,8 @@ class Zone {
   final String id;
   final String name;
   final String zoneNum;
+  // ✅ Ordre correct des déclarations
+  RxString plantType;
   RxBool   enabled;
   RxDouble humidity;
   RxDouble temperature;
@@ -21,6 +23,7 @@ class Zone {
     required this.id,
     required this.name,
     required this.zoneNum,
+    required String plantType,
     required bool   status,
     required double humidity,
     required double temperature,
@@ -30,7 +33,8 @@ class Zone {
     required double phosphore,
     required double potassium,
     required int    sante,
-  })  : enabled     = status.obs,
+  })  : plantType   = plantType.obs,
+        enabled     = status.obs,
         humidity    = humidity.obs,
         temperature = temperature.obs,
         ph          = ph.obs,
@@ -45,29 +49,28 @@ class ZonesController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth      _auth      = FirebaseAuth.instance;
   RxList<Zone> zones = <Zone>[].obs;
-  StreamSubscription? _subscription; // ✅ garder référence au stream
+  StreamSubscription? _subscription;
 
   @override
   void onInit() {
     super.onInit();
-    zones.clear(); // ✅ vider le cache au démarrage
+    zones.clear();
     _ecouterLesZones();
   }
 
   @override
   void onClose() {
-    _subscription?.cancel(); // ✅ annuler le stream proprement
+    _subscription?.cancel();
     super.onClose();
   }
 
   void _ecouterLesZones() {
-    String? uid = _auth.currentUser?.uid;
+    final String? uid = _auth.currentUser?.uid;
     if (uid == null) {
       print("❌ [ZONES] Utilisateur non connecté");
       return;
     }
 
-    // ✅ Annuler l'ancien stream avant d'en créer un nouveau
     _subscription?.cancel();
 
     _subscription = _firestore
@@ -78,36 +81,35 @@ class ZonesController extends GetxController {
         .listen((snapshot) {
           print("📦 [ZONES] ${snapshot.docs.length} zones reçues depuis Firebase");
 
-          // ✅ Remplacer entièrement la liste (gère suppressions + ajouts)
-          // ✅ Dans zones_controller.dart
-zones.assignAll(
-  snapshot.docs.map((doc) {
-    final d = doc.data();
-    return Zone(
-      id:          doc.id,
-      name:        d['name']          ?? 'Zone',
-      zoneNum:     d['zone_num']     ?? doc.id.replaceAll('zone', ''), // Récupère le numéro depuis l'ID si vide
-      status:      d['enabled']       ?? false,
-      // Vérifie bien les noms ici :
-      humidity:    (d['humidity']     ?? 0.0).toDouble(),
-      temperature: (d['temperature']  ?? 0.0).toDouble(),
-      ph:          (d['ph']           ?? 0.0).toDouble(),
-      ec:          (d['ec']           ?? 0.0).toDouble(),
-      azote:       (d['azote']        ?? 0.0).toDouble(),
-      phosphore:   (d['phosphore']    ?? 0.0).toDouble(),
-      potassium:   (d['potassium']    ?? 0.0).toDouble(),
-      sante:       (d['health_score'] ?? 0).toInt(), // Changé 'sante' en 'health_score'
-    );
-  }).toList(),
-);
-
+          zones.assignAll(
+            snapshot.docs.map((doc) {
+              final d = doc.data();
+              return Zone(
+                id:          doc.id,
+                name:        d['name']       ?? 'Zone',
+                zoneNum:     d['zone_num']   ?? doc.id.replaceAll('zone', ''),
+                // ✅ plant_type lu depuis Firestore
+                plantType:   d['plant_type'] ?? '',
+                status:      d['enabled']    ?? false,
+                humidity:    (d['humidity']    ?? 0.0).toDouble(),
+                temperature: (d['temperature'] ?? 0.0).toDouble(),
+                ph:          (d['ph']          ?? 0.0).toDouble(),
+                ec:          (d['ec']          ?? 0.0).toDouble(),
+                // ✅ Noms corrects : 'n', 'p', 'k', 'sante'
+                azote:       (d['n']           ?? 0.0).toDouble(),
+                phosphore:   (d['p']           ?? 0.0).toDouble(),
+                potassium:   (d['k']           ?? 0.0).toDouble(),
+                sante:       (d['sante']       ?? 0).toInt(),
+              );
+            }).toList(),
+          );
         }, onError: (e) {
           print("❌ [ZONES] Erreur Firestore: $e");
         });
   }
 
   void basculerPompe(Zone zone, bool val) async {
-    String? uid = _auth.currentUser?.uid;
+    final String? uid = _auth.currentUser?.uid;
     if (uid == null) return;
     zone.enabled.value = val;
     await _firestore
@@ -119,7 +121,7 @@ zones.assignAll(
   }
 
   Future<void> supprimerZone(String zoneId) async {
-    String? uid = _auth.currentUser?.uid;
+    final String? uid = _auth.currentUser?.uid;
     if (uid == null) return;
     await _firestore
         .collection('users')

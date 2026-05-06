@@ -9,7 +9,7 @@ class Zone {
   final String zoneNum;
   // ✅ Ordre correct des déclarations
   RxString plantType;
-  RxBool   enabled;
+  RxBool enabled;
   RxDouble humidity;
   RxDouble temperature;
   RxDouble ph;
@@ -17,14 +17,14 @@ class Zone {
   RxDouble azote;
   RxDouble phosphore;
   RxDouble potassium;
-  RxInt    sante;
+  RxInt sante;
 
   Zone({
     required this.id,
     required this.name,
     required this.zoneNum,
     required String plantType,
-    required bool   status,
+    required bool status,
     required double humidity,
     required double temperature,
     required double ph,
@@ -32,22 +32,22 @@ class Zone {
     required double azote,
     required double phosphore,
     required double potassium,
-    required int    sante,
-  })  : plantType   = plantType.obs,
-        enabled     = status.obs,
-        humidity    = humidity.obs,
-        temperature = temperature.obs,
-        ph          = ph.obs,
-        ec          = ec.obs,
-        azote       = azote.obs,
-        phosphore   = phosphore.obs,
-        potassium   = potassium.obs,
-        sante       = sante.obs;
+    required int sante,
+  }) : plantType = plantType.obs,
+       enabled = status.obs,
+       humidity = humidity.obs,
+       temperature = temperature.obs,
+       ph = ph.obs,
+       ec = ec.obs,
+       azote = azote.obs,
+       phosphore = phosphore.obs,
+       potassium = potassium.obs,
+       sante = sante.obs;
 }
 
 class ZonesController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth      _auth      = FirebaseAuth.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   RxList<Zone> zones = <Zone>[].obs;
   StreamSubscription? _subscription;
 
@@ -78,34 +78,50 @@ class ZonesController extends GetxController {
         .doc(uid)
         .collection('zones')
         .snapshots()
-        .listen((snapshot) {
-          print("📦 [ZONES] ${snapshot.docs.length} zones reçues depuis Firebase");
+        .listen(
+          (snapshot) async {
+            print(
+              "📦 [ZONES] ${snapshot.docs.length} zones reçues depuis Firebase",
+            );
 
-          zones.assignAll(
-            snapshot.docs.map((doc) {
-              final d = doc.data();
-              return Zone(
-                id:          doc.id,
-                name:        d['name']       ?? 'Zone',
-                zoneNum:     d['zone_num']   ?? doc.id.replaceAll('zone', ''),
-                // ✅ plant_type lu depuis Firestore
-                plantType:   d['plant_type'] ?? '',
-                status:      d['enabled']    ?? false,
-                humidity:    (d['humidity']    ?? 0.0).toDouble(),
-                temperature: (d['temperature'] ?? 0.0).toDouble(),
-                ph:          (d['ph']          ?? 0.0).toDouble(),
-                ec:          (d['ec']          ?? 0.0).toDouble(),
-                // ✅ Noms corrects : 'n', 'p', 'k', 'sante'
-                azote:       (d['n']           ?? 0.0).toDouble(),
-                phosphore:   (d['p']           ?? 0.0).toDouble(),
-                potassium:   (d['k']           ?? 0.0).toDouble(),
-                sante:       (d['sante']       ?? 0).toInt(),
-              );
-            }).toList(),
-          );
-        }, onError: (e) {
-          print("❌ [ZONES] Erreur Firestore: $e");
-        });
+            final zoneList = await Future.wait(
+              snapshot.docs.map((doc) async {
+                final d = doc.data();
+                String plantType = (d['plant_type'] ?? '').toString();
+
+                final plantSnap = await doc.reference
+                    .collection('plante')
+                    .doc('current')
+                    .get();
+                if (plantSnap.exists) {
+                  final plantData = plantSnap.data();
+                  plantType = (plantData?['plant_type'] ?? plantType)
+                      .toString();
+                }
+
+                return Zone(
+                  id: doc.id,
+                  name: d['name'] ?? 'Zone',
+                  zoneNum: d['zone_num'] ?? doc.id.replaceAll('zone', ''),
+                  plantType: plantType,
+                  status: d['enabled'] ?? false,
+                  humidity: (d['humidity'] ?? 0.0).toDouble(),
+                  temperature: (d['temperature'] ?? 0.0).toDouble(),
+                  ph: (d['ph'] ?? 0.0).toDouble(),
+                  ec: (d['ec'] ?? 0.0).toDouble(),
+                  azote: (d['n'] ?? 0.0).toDouble(),
+                  phosphore: (d['p'] ?? 0.0).toDouble(),
+                  potassium: (d['k'] ?? 0.0).toDouble(),
+                  sante: (d['sante'] ?? 0).toInt(),
+                );
+              }),
+            );
+            zones.assignAll(zoneList);
+          },
+          onError: (e) {
+            print("❌ [ZONES] Erreur Firestore: $e");
+          },
+        );
   }
 
   void basculerPompe(Zone zone, bool val) async {

@@ -38,6 +38,7 @@ class AlertsController extends GetxController {
         final String level    = data['level']     ?? 'warning';
 
         return {
+          'id': doc.id,
           'title': _buildTitle(type, zoneNum),   // ✅ traduit
           'msg':   _buildMessage(type, humidity), // ✅ traduit
           'level': level,
@@ -45,6 +46,17 @@ class AlertsController extends GetxController {
         };
       }).toList();
     });
+  }
+
+  Future<void> deleteAlert(String alertId) async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null || alertId.isEmpty) return;
+    await _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('alerts')
+        .doc(alertId)
+        .delete();
   }
 
   // ✅ Titre traduit selon le type et la zone

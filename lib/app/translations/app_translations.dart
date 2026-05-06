@@ -21,6 +21,7 @@ class AppTranslations extends Translations {
       'register_btn': 'إنشاء حساب',
       'already_have_account': 'لديك حساب بالفعل؟',
       'enter_your_mail': 'أدخل بريدك الإلكتروني',
+      'reset_password_help': 'أدخل بريدك الإلكتروني وسنرسل لك رابط استعادة الحساب.',
       'reset_password_btn': 'إعادة تعيين كلمة المرور',
       'back_to_login': 'العودة إلى تسجيل الدخول',
       'reset_title': 'إعادة تعيين كلمة المرور',
@@ -44,6 +45,9 @@ class AppTranslations extends Translations {
       'google_error': 'فشل الاتصال بـ Google',
       'user_not_found': 'هذا الحساب غير موجود',
       'loading': 'جاري التحميل...',
+      'veuillez_saisir_email_valide': 'يرجى إدخال بريد إلكتروني صالح',
+      'email_sent_success': 'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.',
+      'erreur_interne': 'حدث خطأ داخلي. حاول مرة أخرى.',
 
       // --- Dashboard & Navigation ---
       'dashboard': 'لوحة التحكم',
@@ -259,6 +263,7 @@ class AppTranslations extends Translations {
       'register_btn': "S'inscrire",
       'already_have_account': 'Déjà un compte ?',
       'enter_your_mail': 'Entrez votre email',
+      'reset_password_help': 'Entrez votre email, puis nous vous enverrons un lien pour récupérer votre compte.',
       'reset_password_btn': 'RÉINITIALISER LE MOT DE PASSE',
       'back_to_login': 'Retour à la connexion',
       'reset_title': 'Réinitialisez votre mot de passe',
@@ -276,6 +281,9 @@ class AppTranslations extends Translations {
       'veuillez_remplir_champs': 'Veuillez remplir tous les champs',
       'welcome': 'Bienvenue',
       'loading': 'Chargement...',
+      'veuillez_saisir_email_valide': 'Veuillez saisir un email valide',
+      'email_sent_success': 'Un email de réinitialisation a été envoyé.',
+      'erreur_interne': 'Erreur interne, veuillez réessayer.',
 
       'chat_bot_title': 'Assistant IA RoboCare',
       'history': 'Historique',
@@ -478,6 +486,7 @@ class AppTranslations extends Translations {
       'register_btn': 'Register',
       'already_have_account': 'Already have an account?',
       'enter_your_mail': 'Enter your email',
+      'reset_password_help': 'Enter your email and we will send you an account recovery link.',
       'reset_password_btn': 'Reset Password',
       'back_to_login': 'Back to Login',
       'reset_title': 'Reset Your Password',
@@ -494,6 +503,9 @@ class AppTranslations extends Translations {
       'veuillez_remplir_champs': 'Please fill all fields',
       'welcome': 'Welcome',
       'loading': 'Loading...',
+      'veuillez_saisir_email_valide': 'Please enter a valid email',
+      'email_sent_success': 'A password reset email has been sent.',
+      'erreur_interne': 'Internal error, please try again.',
 
       // --- Dashboard & Navigation ---
       'dashboard': 'Dashboard',

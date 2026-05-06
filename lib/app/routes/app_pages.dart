@@ -36,7 +36,9 @@ class AppPages {
       name: Routes.thresholds,
       page: () {
         final args = Get.arguments ?? {'name': 'Zone', 'id': ''};
-        return ThresholdsPage(zoneName: args['name'], zoneId: args['id']);
+        final String zoneName = (args['name'] ?? 'Zone').toString();
+        final String zoneId = (args['id'] ?? '').toString();
+        return ThresholdsPage(zoneName: zoneName, zoneId: zoneId);
       },
     ),
     GetPage(name: Routes.pump, page: () => PumpPage()),

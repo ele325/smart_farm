@@ -243,7 +243,13 @@ class DashboardPage extends StatelessWidget {
             Icons.tune,
             "thresholds".tr,
             Colors.orange,
-            () => Get.toNamed(Routes.thresholds),
+            () => Get.toNamed(
+              Routes.thresholds,
+              arguments: {
+                'name': 'Zone',
+                'id': 'zone1',
+              },
+            ),
           ),
           _quickItem(
             Icons.power,

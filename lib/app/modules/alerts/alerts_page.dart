@@ -123,6 +123,44 @@ class AlertsPage extends StatelessWidget {
                         ? Icons.report_problem
                         : Icons.warning_amber_rounded,
                     statusColor: isCritique ? Colors.red : Colors.orange,
+                    trailing: IconButton(
+                      tooltip: 'Supprimer',
+                      icon: const Icon(
+                        Icons.delete_outline,
+                        color: Colors.redAccent,
+                        size: 20,
+                      ),
+                      onPressed: () async {
+                        final id = (alert['id'] ?? '').toString();
+                        if (id.isEmpty) return;
+                        final confirmed = await Get.dialog<bool>(
+                          AlertDialog(
+                            title: const Text('Confirmation'),
+                            content: const Text(
+                              'Voulez-vous vraiment supprimer cette alerte ?',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Get.back(result: false),
+                                child: const Text('Non'),
+                              ),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.redAccent,
+                                  foregroundColor: Colors.white,
+                                ),
+                                onPressed: () => Get.back(result: true),
+                                child: const Text('Oui'),
+                              ),
+                            ],
+                          ),
+                        );
+
+                        if (confirmed == true) {
+                          await controller.deleteAlert(id);
+                        }
+                      },
+                    ),
                   );
                 },
               );

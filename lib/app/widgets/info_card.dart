@@ -5,6 +5,7 @@ class InfoCard extends StatelessWidget {
   final String value;
   final IconData icon;
   final Color statusColor; // Ajout de la couleur dynamique
+  final Widget? trailing;
 
   const InfoCard({
     super.key,
@@ -12,6 +13,7 @@ class InfoCard extends StatelessWidget {
     required this.value,
     required this.icon,
     this.statusColor = Colors.green, // Vert par défaut
+    this.trailing,
   });
 
   @override
@@ -55,15 +57,15 @@ class InfoCard extends StatelessWidget {
               ],
             ),
           ),
-          // Le petit indicateur de statut (Image 2)
-          Container(
-            width: 10,
-            height: 10,
-            decoration: BoxDecoration(
-              color: statusColor,
-              shape: BoxShape.circle,
-            ),
-          ),
+          trailing ??
+              Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: statusColor,
+                  shape: BoxShape.circle,
+                ),
+              ),
         ],
       ),
     );

@@ -87,7 +87,7 @@ class ForgotPasswordPage extends StatelessWidget {
 
                   // Sous-titre informatif
                   Text(
-                    'enter_your_mail'.tr,
+                    'reset_password_help'.tr,
                     style: const TextStyle(
                       fontSize: 16,
                       color: Colors.grey,

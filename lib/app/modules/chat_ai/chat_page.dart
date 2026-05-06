@@ -270,11 +270,9 @@ class ChatPage extends GetView<ChatController> {
           const SizedBox(width: 8),
           Obx(
             () => Text(
-              ChatController.localeLabels[controller.selectedLocale.value]!
+              '${ChatController.localeLabels[controller.selectedLocale.value]!
                       .split(' ')
-                      .first +
-                  ' ' +
-                  controller.getStateLabel('listening'),
+                      .first} ${controller.getStateLabel('listening')}',
               style: const TextStyle(
                 color: Colors.red,
                 fontWeight: FontWeight.bold,

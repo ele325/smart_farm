@@ -1,9 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class DashboardController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -47,6 +49,10 @@ class DashboardController extends GetxController {
 
   void initUserSync() {
     String? uid = _auth.currentUser?.uid;
+    if (uid != null) {
+      FirebaseMessaging.instance.subscribeToTopic('user_$uid');
+      debugPrint("🔔 [FCM] Abonné au topic : user_$uid");
+    }
 
     _zoneSubscription = _firestore
         .collection('users')

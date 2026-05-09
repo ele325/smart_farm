@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ThresholdRangeData {
@@ -36,8 +38,13 @@ class ThresholdsController extends GetxController {
   RxDouble minHumidity = 30.0.obs;
   RxDouble maxHumidity = 70.0.obs;
   RxInt duration = 15.obs;
+  final TextEditingController durationController = TextEditingController(text: '15');
   RxBool isLoading = false.obs;
+  RxBool isIrrigating = false.obs; // ✅ État local de l'arrosage
+  RxInt remainingSeconds = 0.obs;  // ✅ Compte à rebours visible
   RxBool hasCustomThresholds = false.obs;
+  Timer? _irrigationTimer;         // ✅ Timer côté Flutter
+
   RxMap<String, ThresholdRangeData> thresholds = <String, ThresholdRangeData>{
     'humidity': ThresholdRangeData(min: 30, max: 70),
     'temperature': ThresholdRangeData(min: 18, max: 30),
@@ -52,6 +59,13 @@ class ThresholdsController extends GetxController {
   void onInit() {
     super.onInit();
     _listenToSettings();
+  }
+
+  @override
+  void onClose() {
+    _irrigationTimer?.cancel();
+    durationController.dispose();
+    super.onClose();
   }
 
   void _listenToSettings() {
@@ -131,7 +145,27 @@ class ThresholdsController extends GetxController {
         .listen((snapshot) {
           if (snapshot.exists) {
             final data = snapshot.data()!;
-            duration.value = (data['duration'] ?? 15).toInt();
+            int val = (data['duration'] ?? 15).toInt();
+            duration.value = val;
+            durationController.text = val.toString();
+          }
+        });
+
+    // ✅ Écouter l'état de la zone pour synchroniser isIrrigating
+    _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('zones')
+        .doc(zoneId)
+        .snapshots()
+        .listen((snapshot) {
+          if (snapshot.exists) {
+            final data = snapshot.data()!;
+            final enabled = data['enabled'] ?? false;
+            // Si Firestore dit OFF et qu'on irrigue → stopper le timer
+            if (!enabled && isIrrigating.value) {
+              _cancelTimer();
+            }
           }
         });
   }
@@ -210,5 +244,95 @@ class ThresholdsController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Future<void> startTimedIrrigation() async {
+    String? uid = _auth.currentUser?.uid;
+    if (uid == null || zoneId.isEmpty) return;
+    if (isIrrigating.value) return; // Déjà en cours
+
+    final int minutes = duration.value;
+    final int totalSeconds = minutes * 60;
+
+    try {
+      isLoading.value = true;
+
+      // ✅ 1. Écrire la commande pour l'ESP32 via le Bridge
+      await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('zones')
+          .doc(zoneId)
+          .update({
+        'timed_order_seconds': totalSeconds,
+        'enabled': true,
+        'irrigation_status': 'STARTED',
+      });
+
+      // ✅ 2. Démarrer le timer côté Flutter
+      isIrrigating.value = true;
+      remainingSeconds.value = totalSeconds;
+
+      _irrigationTimer?.cancel();
+      _irrigationTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+        remainingSeconds.value--;
+        if (remainingSeconds.value <= 0) {
+          await _finishIrrigation(uid);
+        }
+      });
+
+      Get.snackbar(
+        "💧 Irrigation lancée",
+        "Arrosage de $minutes min en cours pour $zoneName",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFF1B5E20),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+      );
+    } catch (e) {
+      debugPrint("Erreur lancement irrigation: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// ✅ Appelé automatiquement à la fin du timer
+  Future<void> _finishIrrigation(String uid) async {
+    _irrigationTimer?.cancel();
+    _irrigationTimer = null;
+    isIrrigating.value = false;
+    remainingSeconds.value = 0;
+
+    try {
+      await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('zones')
+          .doc(zoneId)
+          .update({
+        'enabled': false,
+        'irrigation_status': 'FINISHED',
+      });
+
+      debugPrint("✅ [THRESHOLDS] Irrigation terminée pour $zoneId");
+
+      Get.snackbar(
+        "✅ Irrigation Terminée",
+        "L'arrosage de $zoneName est fini. La pompe est fermée.",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.blue[800],
+        colorText: Colors.white,
+        duration: const Duration(seconds: 5),
+      );
+    } catch (e) {
+      debugPrint("Erreur fin irrigation: $e");
+    }
+  }
+
+  void _cancelTimer() {
+    _irrigationTimer?.cancel();
+    _irrigationTimer = null;
+    isIrrigating.value = false;
+    remainingSeconds.value = 0;
   }
 }

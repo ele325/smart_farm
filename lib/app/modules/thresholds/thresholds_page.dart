@@ -28,7 +28,7 @@ class ThresholdsPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           "${"irrigation_thresholds".tr} — $zoneName",
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white, fontSize: 18),
         ),
         backgroundColor: Colors.green[800],
         elevation: 0,
@@ -38,15 +38,27 @@ class ThresholdsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "thresholds_desc".tr,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Color(0xFF8B949E),
-                height: 1.25,
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue[50],
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.blue[100]!),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      "thresholds_info_desc".tr, // "Réglez les seuils pour l'arrosage automatique et la durée par défaut."
+                      style: TextStyle(fontSize: 12, color: Colors.blue[900]),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 24),
             Obx(
               () => Text(
                 controller.plantType.value.isEmpty
@@ -59,31 +71,7 @@ class ThresholdsPage extends StatelessWidget {
                 ),
               ),
             ),
-            Obx(
-              () => controller.hasCustomThresholds.value
-                  ? const SizedBox.shrink()
-                  : Container(
-                      margin: const EdgeInsets.only(top: 8, bottom: 6),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFF7E6),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: const Color(0xFFFFD591)),
-                      ),
-                      child: const Text(
-                        "Cette zone n'a pas encore de seuils réels configurés par l'admin.",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF8C6D1F),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-            ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 20),
 
             Obx(
               () => controller.hasCustomThresholds.value
@@ -142,53 +130,70 @@ class ThresholdsPage extends StatelessWidget {
                   : const SizedBox.shrink(),
             ),
             const SizedBox(height: 18),
-            Obx(
-              () => controller.hasCustomThresholds.value
-                  ? _buildDurationCard()
-                  : const SizedBox.shrink(),
-            ),
+            _buildDurationCard(),
+            // ✅ BOUTON DÉMARRER avec compte à rebours
+            Obx(() {
+              final irrigating = controller.isIrrigating.value;
+              final remaining = controller.remainingSeconds.value;
+              final mins = remaining ~/ 60;
+              final secs = remaining % 60;
+              final label = irrigating
+                  ? "⏱ ${'irrigating'.tr}  $mins:${secs.toString().padLeft(2, '0')}"
+                  : "${'start'.tr} (${controller.duration.value} min)";
+              return SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: irrigating ? Colors.orange[700] : Colors.blue[700],
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                  onPressed: (controller.isLoading.value || irrigating)
+                      ? null
+                      : () => controller.startTimedIrrigation(),
+                  icon: Icon(
+                    irrigating ? Icons.water_drop : Icons.play_arrow,
+                    color: Colors.white,
+                  ),
+                  label: Text(
+                    label,
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              );
+            }),
             const SizedBox(height: 30),
 
-            // --- BOUTON SAUVEGARDE ---
+            // --- BOUTONS ACTIONS (Sauvegarde conditionnelle) ---
             Obx(
               () => controller.hasCustomThresholds.value
-                  ? SizedBox(
-                      width: double.infinity,
-                      height: 54,
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green[800],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          elevation: 1.5,
-                        ),
-                        onPressed: controller.isLoading.value
-                            ? null
-                            : () async {
-                                bool success = await controller.saveSettings();
-                                if (success) _showSuccessMessage();
-                              },
-                        icon: controller.isLoading.value
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Icon(Icons.save, color: Colors.white),
-                        label: Text(
-                          controller.isLoading.value
-                              ? "saving...".tr
-                              : "save_settings".tr,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                  ? Column(
+                      children: [
+                        // SAUVEGARDER
+                        SizedBox(
+                          width: double.infinity,
+                          height: 54,
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green[800],
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                            ),
+                            onPressed: controller.isLoading.value
+                                ? null
+                                : () async {
+                                    bool success = await controller.saveSettings();
+                                    if (success) _showSuccessMessage();
+                                  },
+                            icon: controller.isLoading.value
+                                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                                : const Icon(Icons.save, color: Colors.white),
+                            label: Text(
+                              controller.isLoading.value ? "saving...".tr : "save_thresholds".tr,
+                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     )
                   : const SizedBox.shrink(),
             ),
@@ -199,9 +204,8 @@ class ThresholdsPage extends StatelessWidget {
   }
 
   Widget _buildDurationCard() {
-    return Obx(
-      () => Container(
-        padding: const EdgeInsets.all(14),
+    return Container(
+      padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -219,31 +223,48 @@ class ThresholdsPage extends StatelessWidget {
             const Icon(Icons.timer_outlined, color: Color(0xFF1B5E20)),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(
-                "irrigation_duration".tr,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
-                  color: Color(0xFF1F2937),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "irrigation_duration".tr,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                      color: Color(0xFF1F2937),
+                    ),
+                  ),
+                  Text(
+                    "duration_help".tr, // "Cette durée sera utilisée lors du démarrage manuel."
+                    style: const TextStyle(fontSize: 11, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: SizedBox(
+                height: 45,
+                child: TextField(
+                  controller: controller.durationController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    hintText: "min",
+                    suffixText: "min",
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  onChanged: (val) {
+                    int? minutes = int.tryParse(val);
+                    if (minutes != null && minutes > 0) {
+                      controller.duration.value = minutes;
+                    }
+                  },
                 ),
               ),
             ),
-            DropdownButton<int>(
-              value: controller.duration.value,
-              items: [5, 10, 15, 30]
-                  .map(
-                    (val) => DropdownMenuItem(
-                      value: val,
-                      child: Text("$val min"),
-                    ),
-                  )
-                  .toList(),
-              onChanged: (val) => controller.duration.value = val!,
-            ),
           ],
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildRangeEditor({

@@ -78,8 +78,10 @@ class AlertsController extends GetxController {
   // ✅ Message traduit avec la valeur injectée
   String _buildMessage(String type, double humidity) {
     switch (type) {
-      case 'prediction': // <--- NOUVEAU : Message pour l'IA
-        return 'L\'IA détecte une chute rapide (${humidity.toStringAsFixed(1)}%). Arrosage recommandé bientôt.';
+      case 'prediction':
+        return 'alert_prediction'.trParams({
+          'val': humidity.toStringAsFixed(1),
+        });
       case 'low_humidity':
         return '${'alert_critical_humidity'.tr} ${humidity.toStringAsFixed(1)}%. ${'alert_pump_activated'.tr}';
       case 'high_humidity':

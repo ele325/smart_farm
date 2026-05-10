@@ -113,16 +113,28 @@ class AlertsPage extends StatelessWidget {
                 itemCount: controller.alerts.length,
                 itemBuilder: (context, index) {
                   final alert = controller.alerts[index];
-                  final bool isCritique = alert['level'] == 'critique';
+                  final String level = alert['level'] ?? 'warning';
+                  
+                  IconData icon;
+                  Color color;
+                  
+                  if (level == 'critique') {
+                    icon = Icons.report_problem;
+                    color = Colors.red;
+                  } else if (level == 'info') {
+                    icon = Icons.check_circle;
+                    color = Colors.green;
+                  } else {
+                    icon = Icons.warning_amber_rounded;
+                    color = Colors.orange;
+                  }
 
                   return InfoCard(
                     title: alert['title']!, // ✅ déjà traduit dans controller
                     value:
                         "${alert['msg']} (${alert['time']})", // ✅ déjà traduit
-                    icon: isCritique
-                        ? Icons.report_problem
-                        : Icons.warning_amber_rounded,
-                    statusColor: isCritique ? Colors.red : Colors.orange,
+                    icon: icon,
+                    statusColor: color,
                     trailing: IconButton(
                       tooltip: 'Supprimer',
                       icon: const Icon(

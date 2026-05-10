@@ -224,6 +224,9 @@ class AppTranslations extends Translations {
       'delete_confirm_msg': 'هل تريد حقًا مسح هذه المحادثة؟',
       'no': 'لا',
       'yes_delete': 'نعم ، حذف',
+      'irrigation_finished': 'تم الانتهاء من الري ✅',
+      'irrigation_finished_msg': 'تم الانتهاء من الري بنجاح. المضخة متوقفة.',
+      'alert_prediction': 'تتوقع الذكاء الاصطناعي انخفاضاً سريعاً (@val%). ينصح بالري قريباً.',
     },
     'fr': {
       'login': 'Connexion',
@@ -429,6 +432,9 @@ class AppTranslations extends Translations {
       'irrigating': 'ARROSAGE...',
       'irrigation_alert': 'Alerte Irrigation',
       'irrigation_started_msg': 'Arrosage de @minutes min lancé pour @zone',
+      'irrigation_finished': 'Irrigation Terminée ✅',
+      'irrigation_finished_msg': "L'arrosage est terminé avec succès. La pompe est arrêtée.",
+      'alert_prediction': "L'IA détecte une chute rapide (@val%). Arrosage recommandé bientôt.",
     },
     'en': {
       'login': 'Login',
@@ -590,6 +596,9 @@ class AppTranslations extends Translations {
       'irrigating': 'IRRIGATING...',
       'irrigation_alert': 'Irrigation Alert',
       'irrigation_started_msg': 'Irrigation of @minutes min started for @zone',
+      'irrigation_finished': 'Irrigation Finished ✅',
+      'irrigation_finished_msg': 'Irrigation finished successfully. Pump is stopped.',
+      'alert_prediction': 'AI detects a rapid drop (@val%). Irrigation recommended soon.',
     },
   };
 }

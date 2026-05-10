@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'thresholds_controller.dart';
+import '../zones/zones_controller.dart';
 
 class ThresholdsPage extends StatelessWidget {
   final String zoneId;
@@ -131,36 +132,68 @@ class ThresholdsPage extends StatelessWidget {
             ),
             const SizedBox(height: 18),
             _buildDurationCard(),
-            // ✅ BOUTON DÉMARRER avec compte à rebours
-            Obx(() {
-              final irrigating = controller.isIrrigating.value;
-              final remaining = controller.remainingSeconds.value;
-              final mins = remaining ~/ 60;
-              final secs = remaining % 60;
-              final label = irrigating
-                  ? "⏱ ${'irrigating'.tr}  $mins:${secs.toString().padLeft(2, '0')}"
-                  : "${'start'.tr} (${controller.duration.value} min)";
-              return SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: irrigating ? Colors.orange[700] : Colors.blue[700],
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            // ✅ BOUTON DÉMARRER avec compte à rebours — lit depuis ZonesController (permanent)
+            Builder(builder: (context) {
+              final zonesCtrl = Get.isRegistered<ZonesController>()
+                  ? Get.find<ZonesController>()
+                  : null;
+              final zone = zonesCtrl?.getZone(zoneId);
+
+              if (zone == null) {
+                return Obx(() {
+                  return SizedBox(
+                    width: double.infinity,
+                    height: 54,
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue[700],
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      ),
+                      onPressed: controller.isLoading.value
+                          ? null
+                          : () => controller.startTimedIrrigation(),
+                      icon: const Icon(Icons.play_arrow, color: Colors.white),
+                      label: Text(
+                        "${'start'.tr} (${controller.duration.value} min)",
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  );
+                });
+              }
+
+              return Obx(() {
+                final irrigating = zone.isIrrigating.value;
+                final remaining = zone.remainingSeconds.value;
+                final mins = remaining ~/ 60;
+                final secs = remaining % 60;
+                final label = irrigating
+                    ? "⏱ ${'irrigating'.tr}  $mins:${secs.toString().padLeft(2, '0')}"
+                    : "${'start'.tr} (${controller.duration.value} min)";
+                return SizedBox(
+                  width: double.infinity,
+                  height: 54,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: irrigating ? Colors.red[700] : Colors.blue[700],
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    ),
+                    onPressed: controller.isLoading.value
+                        ? null
+                        : (irrigating 
+                            ? () => controller.stopTimedIrrigation() 
+                            : () => controller.startTimedIrrigation()),
+                    icon: Icon(
+                      irrigating ? Icons.stop : Icons.play_arrow,
+                      color: Colors.white,
+                    ),
+                    label: Text(
+                      label,
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                  onPressed: (controller.isLoading.value || irrigating)
-                      ? null
-                      : () => controller.startTimedIrrigation(),
-                  icon: Icon(
-                    irrigating ? Icons.water_drop : Icons.play_arrow,
-                    color: Colors.white,
-                  ),
-                  label: Text(
-                    label,
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              );
+                );
+              });
             }),
             const SizedBox(height: 30),
 

@@ -36,11 +36,15 @@ class AlertsController extends GetxController {
         final double humidity = (data['humidity'] ?? 0.0).toDouble();
         final String type     = data['type']      ?? 'unknown';
         final String level    = data['level']     ?? 'warning';
+        
+        // Champs optionnels envoyés par le backend
+        final String? rawTitle = data['title'];
+        final String? rawMsg   = data['message'] ?? data['msg'] ?? data['body'];
 
         return {
           'id': doc.id,
-          'title': _buildTitle(type, zoneNum),   // ✅ traduit
-          'msg':   _buildMessage(type, humidity), // ✅ traduit
+          'title': _buildTitle(type, zoneNum, rawTitle),   
+          'msg':   _buildMessage(type, humidity, rawMsg), 
           'level': level,
           'time':  _formatTimestamp(data['timestamp']),
         };
@@ -60,9 +64,9 @@ class AlertsController extends GetxController {
   }
 
   // ✅ Titre traduit selon le type et la zone
- String _buildTitle(String type, String zoneNum) {
+  String _buildTitle(String type, String zoneNum, String? rawTitle) {
     switch (type) {
-      case 'prediction': // <--- NOUVEAU : Cas pour l'IA
+      case 'prediction':
         return 'Anticipation RoboCare : Zone $zoneNum 🧠'; 
       case 'low_humidity':
         return '${'alert_zone'.tr} $zoneNum 🚨';
@@ -70,13 +74,17 @@ class AlertsController extends GetxController {
         return '${'alert_zone'.tr} $zoneNum 💧';
       case 'ph_alert':
         return '${'alert_zone'.tr} $zoneNum ⚗️';
+      case 'pump_reminder':
+        return 'alert_pump_reminder_title'.tr;
       default:
+        // ✅ Si le backend envoie un titre spécifique, on l'utilise
+        if (rawTitle != null && rawTitle.isNotEmpty) return rawTitle;
         return '${'alert_zone'.tr} $zoneNum';
     }
   }
 
   // ✅ Message traduit avec la valeur injectée
-  String _buildMessage(String type, double humidity) {
+  String _buildMessage(String type, double humidity, String? rawMsg) {
     switch (type) {
       case 'prediction':
         return 'alert_prediction'.trParams({
@@ -89,6 +97,8 @@ class AlertsController extends GetxController {
       case 'ph_alert':
         return 'alert_ph_abnormal'.tr;
       default:
+        // ✅ Priorité au message brut envoyé par le backend (pour les nouveaux types)
+        if (rawMsg != null && rawMsg.isNotEmpty) return rawMsg;
         return 'alert_unknown'.tr;
     }
   }

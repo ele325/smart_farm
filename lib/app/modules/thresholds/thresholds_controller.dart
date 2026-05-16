@@ -169,81 +169,9 @@ class ThresholdsController extends GetxController {
         });
   }
 
-  void setThresholdMin(String key, double value) {
-    final current = thresholds[key];
-    if (current == null) return;
-    if (value <= current.max) {
-      thresholds[key] = ThresholdRangeData(min: value, max: current.max);
-      if (key == 'humidity') minHumidity.value = value;
-    }
-  }
+  // ✅ Les méthodes de modification ont été supprimées car seuls les ingénieurs 
+  // configurent les seuils via l'interface d'administration ou directement en base.
 
-  void setThresholdMax(String key, double value) {
-    final current = thresholds[key];
-    if (current == null) return;
-    if (value >= current.min) {
-      thresholds[key] = ThresholdRangeData(min: current.min, max: value);
-      if (key == 'humidity') maxHumidity.value = value;
-    }
-  }
-
-  Future<bool> saveSettings() async {
-    String? uid = _auth.currentUser?.uid;
-    if (uid == null || zoneId.isEmpty) return false;
-    if (!hasCustomThresholds.value) {
-      Get.snackbar(
-        "Information",
-        "Aucun seuil réel n'est configuré par l'admin pour cette zone.",
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return false;
-    }
-    try {
-      isLoading.value = true;
-
-      await _firestore
-          .collection('users')
-          .doc(uid)
-          .collection('zones')
-          .doc(zoneId)
-          .collection('plante')
-          .doc('current')
-          .set({
-            'plant_type': plantType.value.isEmpty ? zoneName : plantType.value,
-            'thresholds': {
-              'humidity': thresholds['humidity']!.toMap(),
-              'temperature': thresholds['temperature']!.toMap(),
-              'ph': thresholds['ph']!.toMap(),
-              'ec': thresholds['ec']!.toMap(),
-              'n': thresholds['n']!.toMap(),
-              'p': thresholds['p']!.toMap(),
-              'k': thresholds['k']!.toMap(),
-            },
-            'updatedAt': FieldValue.serverTimestamp(),
-          }, SetOptions(merge: true));
-
-      await _firestore
-          .collection('users')
-          .doc(uid)
-          .collection('zones')
-          .doc(zoneId)
-          .collection('config')
-          .doc('thresholds')
-          .set({
-            'minHumidity': thresholds['humidity']!.min,
-            'maxHumidity': thresholds['humidity']!.max,
-            'duration': duration.value,
-            'updatedAt': FieldValue.serverTimestamp(),
-          }, SetOptions(merge: true));
-      hasCustomThresholds.value = true;
-      return true;
-    } catch (e) {
-      debugPrint("Erreur Firebase: $e");
-      return false;
-    } finally {
-      isLoading.value = false;
-    }
-  }
 
   /// ✅ Délègue le démarrage du timer au ZonesController (permanent)
   Future<void> startTimedIrrigation() async {

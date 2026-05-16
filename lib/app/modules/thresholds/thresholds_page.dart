@@ -50,10 +50,10 @@ class ThresholdsPage extends StatelessWidget {
                 children: [
                   Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
                   const SizedBox(width: 10),
-                  Expanded(
+                  const Expanded(
                     child: Text(
-                      "thresholds_info_desc".tr, // "Réglez les seuils pour l'arrosage automatique et la durée par défaut."
-                      style: TextStyle(fontSize: 12, color: Colors.blue[900]),
+                      "Les seuils sont configurés par les ingénieurs agricoles pour garantir une irrigation optimale.",
+                      style: TextStyle(fontSize: 12, color: Color(0xFF0D47A1), fontWeight: FontWeight.w500),
                     ),
                   ),
                 ],
@@ -195,41 +195,7 @@ class ThresholdsPage extends StatelessWidget {
                 );
               });
             }),
-            const SizedBox(height: 30),
-
-            // --- BOUTONS ACTIONS (Sauvegarde conditionnelle) ---
-            Obx(
-              () => controller.hasCustomThresholds.value
-                  ? Column(
-                      children: [
-                        // SAUVEGARDER
-                        SizedBox(
-                          width: double.infinity,
-                          height: 54,
-                          child: ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green[800],
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                            ),
-                            onPressed: controller.isLoading.value
-                                ? null
-                                : () async {
-                                    bool success = await controller.saveSettings();
-                                    if (success) _showSuccessMessage();
-                                  },
-                            icon: controller.isLoading.value
-                                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                                : const Icon(Icons.save, color: Colors.white),
-                            label: Text(
-                              controller.isLoading.value ? "saving...".tr : "save_thresholds".tr,
-                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-                  : const SizedBox.shrink(),
-            ),
+            const SizedBox(height: 10),
           ],
         ),
       ),
@@ -351,8 +317,6 @@ class ThresholdsPage extends StatelessWidget {
                   label: 'Min',
                   value: range.min,
                   color: color,
-                  onMinus: () => controller.setThresholdMin(keyName, range.min - 1),
-                  onPlus: () => controller.setThresholdMin(keyName, range.min + 1),
                 ),
               ),
               const SizedBox(width: 10),
@@ -361,8 +325,6 @@ class ThresholdsPage extends StatelessWidget {
                   label: 'Max',
                   value: range.max,
                   color: color,
-                  onMinus: () => controller.setThresholdMax(keyName, range.max - 1),
-                  onPlus: () => controller.setThresholdMax(keyName, range.max + 1),
                 ),
               ),
             ],
@@ -376,55 +338,31 @@ class ThresholdsPage extends StatelessWidget {
     required String label,
     required double value,
     required Color color,
-    required VoidCallback onMinus,
-    required VoidCallback onPlus,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.06),
+        color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.1)),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 13,
+              color: Colors.grey[700],
             ),
           ),
-          const SizedBox(width: 4),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                _stepActionIcon(
-                  icon: Icons.remove_circle_outline,
-                  color: color,
-                  onTap: onMinus,
-                ),
-                const SizedBox(width: 4),
-                Flexible(
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      value.toStringAsFixed(1),
-                      style: TextStyle(
-                        color: color,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 4),
-                _stepActionIcon(
-                  icon: Icons.add_circle_outline,
-                  color: color,
-                  onTap: onPlus,
-                ),
-              ],
+          Text(
+            value.toStringAsFixed(1),
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
             ),
           ),
         ],
@@ -432,30 +370,4 @@ class ThresholdsPage extends StatelessWidget {
     );
   }
 
-  Widget _stepActionIcon({
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(12),
-      onTap: onTap,
-      child: SizedBox(
-        width: 22,
-        height: 22,
-        child: Icon(icon, size: 18, color: color),
-      ),
-    );
-  }
-
-  void _showSuccessMessage() {
-    Get.snackbar(
-      "config_updated".tr,
-      "pump_logic_desc".tr,
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.green[800],
-      colorText: Colors.white,
-      icon: const Icon(Icons.check_circle, color: Colors.white),
-    );
-  }
 }
